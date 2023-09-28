@@ -7,7 +7,7 @@ export const registerTestRoutes = (server: FastifyInstance) => {
     try {
       let { workflowName } = request.params;
       //start workflows via GET http://localhost:3002/apis/v1/test/:workflowName
-      if (!['parent', 'child', 'helloworld', 'looper'].includes(workflowName)) {
+      if (!['parent', 'child', 'helloworld', 'looper', 'remote'].includes(workflowName)) {
         workflowName = 'helloworld';
       }
       const response = await executeDurableWorkflow(workflowName);

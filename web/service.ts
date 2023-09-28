@@ -1,5 +1,6 @@
 import 'dotenv/config'
 import fastify from 'fastify';
+import { Durable } from '@hotmeshio/hotmesh';
 
 import { setupTelemetry } from '../services/tracer'
 import { registerTestRoutes } from './routes/test';
@@ -15,20 +16,28 @@ const start = async (port: number) => {
   // register test route (/apis/v1/test/:workflowName)
   registerTestRoutes(server);
 
-  //7) start the workers
-  await initDurableWorker('helloworld');
-  await initDurableWorker('child');
-  await initDurableWorker('parent');
-  await initDurableWorker('looper');
+  // start the workers; most will run in the main
+  // process, but a second node instance is declared
+  // in the docker-compose.yml file that will run
+  // the `remote` workflow
+  if (process.env.IS_REMOTE_HOST) {
+    await initDurableWorker('remote');
+  } else {
+    await initDurableWorker('helloworld');
+    await initDurableWorker('child');
+    await initDurableWorker('parent');
+    await initDurableWorker('looper');
+  }
 
-  //8) start fastify on the port configured in the docker-compose.yml file
+  // start fastify on the port configured in the docker-compose.yml file
   try {
     await server.listen({ port, path: '0.0.0.0' });
     console.log(`Server is running on port ${port}`);
 
     async function shutdown() {
       server.close(async () => {
-        //todo exit psdb gracefull
+        await Durable.Client.shutdown();
+        await Durable.Worker.shutdown();
         process.exit(0);
       });
     }
@@ -50,4 +59,5 @@ const start = async (port: number) => {
   }
 };
 
-start(3002);
+//use port in docker-compose if available
+start(Number(process.env.PORT || 3002));
