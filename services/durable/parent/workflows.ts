@@ -1,7 +1,7 @@
 import { Durable } from '@hotmeshio/hotmesh';
-import type * as activities from './activities';
+import * as activities from './activities';
 
-const { parent } = Durable.workflow.proxyActivities<typeof activities>();
+const { parent } = Durable.workflow.proxyActivities<typeof activities>({ activities });
 
 export async function parentExample(name: string): Promise<Record<string, string>> {
   const [

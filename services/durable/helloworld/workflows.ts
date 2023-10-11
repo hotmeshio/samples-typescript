@@ -1,7 +1,7 @@
 import { Durable } from '@hotmeshio/hotmesh';
-import type * as activities from './activities';
+import * as activities from './activities';
 
-const { helloworld } = Durable.workflow.proxyActivities<typeof activities>();
+const { helloworld } = Durable.workflow.proxyActivities<typeof activities>({ activities });
 
 export async function helloworldExample(name: string): Promise<string> {
   return await helloworld(name);

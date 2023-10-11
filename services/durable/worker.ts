@@ -17,8 +17,7 @@ async function initDurableWorker(workflowName = 'helloworld') {
     connection,
     namespace: 'default',
     taskQueue: workflowName,
-    workflowsPath: require.resolve(`./${workflowName}/workflows`),
-    activities: await import(`./${workflowName}/activities`),
+    workflow: await import(`./${workflowName}/workflows`),
   });
   await worker.run();
 }

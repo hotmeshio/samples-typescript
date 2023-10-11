@@ -53,20 +53,15 @@ export async function looperExample(name: string): Promise<Record<string, string
 
 The docker-compose file spins up **two** Node instances and a single Redis instance. The Node instances start different durable workers. Execute the `remote` demo (described below) to run a cross-container workflow, where the *request* is handled by one Node instance (`service_a`) and the *workflow* is executed by another (`service_b`).
 
-## Keys
-Add a `.env` file to the project root and include your keys for honeycomb open telemetry if you wish to use the default tracer configuration located in `./services/tracer.ts`. The following keys are required to enable the default tracer in this project (but you can add your own tracer configuration and supporting keys if you use a different OpenTelemetry provider):
+## Telemetry Keys
+*Optionally*, add a `.env` file to the project root and include your keys for honeycomb open telemetry if you wish to use the default tracer configuration located in `./services/tracer.ts`. The following keys are required to enable the default tracer in this project (but you can add your own tracer configuration and supporting keys if you use a different OpenTelemetry provider).
 
 ```
 HONEYCOMB_API_KEY=XXXXXXXXXX
 OTEL_SERVICE_NAME=yyyy
 ```
 
-## Install
-Download from GitHub and run the following command to load dependencies:
-
-```bash
-npm install
-```
+>If you don't have a Honeycomb account, you can sign up for a free trial [here](https://ui.honeycomb.io/signup).
 
 ## Build
 The application includes a docker-compose file that spins up one Redis instance and one Node instance. To build the application, run the following command:
