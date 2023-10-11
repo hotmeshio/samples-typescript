@@ -1,7 +1,8 @@
 import { Durable } from '@hotmeshio/hotmesh';
 import * as activities from './activities';
 
-const { looper } = Durable.workflow.proxyActivities<typeof activities>({ activities });
+const { looper } = Durable.workflow
+  .proxyActivities<typeof activities>({ activities });
 
 export async function looperExample(name: string): Promise<Record<string, string>> {
   const loopVal1 = await looper(`${name} - 1`);
