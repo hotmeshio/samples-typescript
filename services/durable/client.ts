@@ -5,17 +5,16 @@ import { nanoid } from 'nanoid';
 import config from '../../config';
 
 async function executeDurableWorkflow(workflowName = 'helloworld') {
-  const connection = await Durable.Connection.connect({
-    class: Redis,
-    options: {
-      host: config.REDIS_HOST,
-      port: config.REDIS_PORT,
-      password: config.REDIS_PASSWORD,
-      db: config.REDIS_DATABASE,
-    },
-  });
   const client = new Durable.Client({
-    connection,
+    connection: {
+      class: Redis,
+      options: {
+        host: config.REDIS_HOST,
+        port: config.REDIS_PORT,
+        password: config.REDIS_PASSWORD,
+        db: config.REDIS_DATABASE,
+      },
+    },
   });
   const handle = await client.workflow.start({
     args: ['HotMesh'],
