@@ -17,7 +17,7 @@
     "@honeycombio/opentelemetry-node": "^0.5.0",
     "@opentelemetry/auto-instrumentations-node": "^0.39.2",
     "@opentelemetry/sdk-node": "^0.43.0",
-    "@hotmeshio/hotmesh": "^0.0.9",
+    "@hotmeshio/hotmesh": "^0.0.10",
     "dotenv": "^16.3.1",
     "fastify": "^4.21.0",
     "ioredis": "^5.3.2",

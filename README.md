@@ -55,13 +55,13 @@ export async function looperExample(name: string): Promise<Record<string, string
 The docker-compose file spins up **two** Node instances and a single Redis instance. The Node instances start different durable workers. Execute the `remote` demo (described below) to run a cross-container workflow, where the *request* is handled by one Node instance (`service_a`) and the *workflow* is executed by another (`service_b`).
 
 ## Build
-The application includes a docker-compose file that spins up one Redis instance and one Node instance. To build the application, run the following command:
+The application includes a docker-compose file that spins up one Redis instance and two Node instances. To build the application, run the following command:
 
 ```bash
 docker-compose up --build -d
 ```
 
->The Node instance initializes a Fastify HTTP server and starts the various durable workers needed for the demo.
+>The Node instance initializes a Fastify HTTP server on port `3002` and starts the various durable workers needed for the demo.
 
 ## Run
 Open a browser and navigate to `http://localhost:3002/apis/v1/test/helloworld` to invoke the `helloworld` workflow. Additional workflows can be tested by invoking them in the same manner (e.g., `v1/test/helloworld`, `v1/test/child`, `v1/test/parent`, `v1/test/looper`, `v1/test/remote`).

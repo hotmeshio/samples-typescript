@@ -27,6 +27,7 @@ const start = async (port: number) => {
     await initDurableWorker('child');
     await initDurableWorker('parent');
     await initDurableWorker('looper');
+    await initDurableWorker('retry');
   }
 
   // start fastify on the port configured in the docker-compose.yml file
