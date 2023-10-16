@@ -7,7 +7,7 @@ import { registerTestRoutes } from './routes/test';
 import initDurableWorker from '../services/durable/worker';
 
 const start = async (port: number) => {
-  // setup open telemetry (sink/export to honeycomb)
+  // setup open telemetry (sink/export to honeycomb...see README.md)
   setupTelemetry();
 
   // init Fastify http server
@@ -19,18 +19,17 @@ const start = async (port: number) => {
   // start the workers; most will run in the main
   // process, but a second node instance is declared
   // in the docker-compose.yml file that will run
-  // the `remote` workflow
+  // the `remote` and `child` workers
   if (process.env.IS_REMOTE_HOST) {
     await initDurableWorker('remote');
-  } else {
-    await initDurableWorker('helloworld');
     await initDurableWorker('child');
-    await initDurableWorker('parent');
-    await initDurableWorker('looper');
-    await initDurableWorker('retry');
   }
+  await initDurableWorker('helloworld');
+  await initDurableWorker('parent');
+  await initDurableWorker('looper');
+  await initDurableWorker('retry');
 
-  // start fastify on the port configured in the docker-compose.yml file
+  // start fastify
   try {
     await server.listen({ port, path: '0.0.0.0' });
     console.log(`Server is running on port ${port}`);

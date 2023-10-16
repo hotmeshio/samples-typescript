@@ -16,6 +16,10 @@ async function initDurableWorker(workflowName = 'helloworld') {
     },
     taskQueue: workflowName,
     workflow: await import(`./${workflowName}/workflows`),
+    options: {
+      maxSystemRetries: 2,
+      backoffExponent: 2,
+    }
   });
   await worker.run();
 }
