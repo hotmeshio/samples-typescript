@@ -25,9 +25,12 @@ const start = async (port: number) => {
     await initDurableWorker('child');
   }
   await initDurableWorker('helloworld');
+  await initDurableWorker('saludar');
+  await initDurableWorker('sleep');
   await initDurableWorker('parent');
   await initDurableWorker('looper');
   await initDurableWorker('retry');
+  await initDurableWorker('wait');
 
   // start fastify
   try {

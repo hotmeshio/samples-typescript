@@ -13,7 +13,7 @@ export async function parentExample(name: string): Promise<Record<string, string
       args: [`${name} to CHILD`],
       taskQueue: 'child',
       workflowName: 'childExample',
-      workflowId: '-'
+      workflowId: 'child'
     })
   ]);
   return { activityOutput, childWorkflowOutput };

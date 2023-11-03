@@ -1,5 +1,5 @@
 # samples-typescript
-This repo demonstrates the use of HotMesh in a TypeScript environment. The samples are built using HotMesh's `Durable` module which is an emulation of Temporal's TypeScript SDK. Both `proxyActivities` and `executeChild` are reflected in the samples.
+This repo demonstrates the use of HotMesh in a TypeScript environment. The samples are built using HotMesh's `Durable` module which is an emulation of Temporal's TypeScript SDK. Examples include `proxyActivities`, `executeChild`, `sleep`, and `retry`.
 
 Here, for example, is the `looper` workflow. It calls two activities *sequentially* and three child workflows in *parallel*. The workflow is defined in `./services/durable/looper/workflows.ts`:
 
@@ -52,7 +52,26 @@ export async function looperExample(name: string): Promise<Record<string, string
 }
 ```
 
-The docker-compose file spins up **two** Node instances and a single Redis instance. The Node instances start different durable workers. Execute the `remote` demo (described below) to run a cross-container workflow, where the *request* is handled by one Node instance (`service_a`) and the *workflow* is executed by another (`service_b`).
+The `wait` workflow example waits for 2 external signals before awakening. The workflow is defined in `./services/durable/wait/workflows.ts`:
+
+```typescript
+import { Durable } from '@hotmeshio/hotmesh';
+
+type SignalMsg = Record<string, string>;
+
+export async function waitExample(name: string): Promise<[SignalMsg, SignalMsg]> {
+  //this will hang until the workflow is signaled with the 'abc' and 'xzy' signals
+  return await Durable.workflow.waitForSignal(['abc','xyz']);
+}
+```
+
+Kick of the `wait` workflow by calling `http://localhost:3002/apis/v1/test/wait` from a browser or your HTTP client. *The call will hang until the workflow is signaled with the 'abc' and 'xyz' signals.*
+
+While the initial call is hanging, open another HTTP client (or a browser) and signal the workflow by calling `http://localhost:3002/apis/v1/signal/abc` and `http://localhost:3002/apis/v1/signal/xyz`.
+
+## Docker-Compose
+
+The docker-compose configuration spins up **two** Node instances and 1 Redis instance (on port 6371). The Node instances start different durable workers.
 
 ## Build
 The application includes a docker-compose file that spins up one Redis instance and two Node instances. To build the application, run the following command:
@@ -64,7 +83,7 @@ docker-compose up --build -d
 >The Node instance initializes a Fastify HTTP server on port `3002` and starts the various durable workers needed for the demo.
 
 ## Run
-Open a browser and navigate to `http://localhost:3002/apis/v1/test/helloworld` to invoke the `helloworld` workflow. Additional workflows can be tested by invoking them in the same manner (e.g., `v1/test/helloworld`, `v1/test/child`, `v1/test/parent`, `v1/test/looper`, `v1/test/remote`, `v1/test/retry`).
+Open a browser and navigate to `http://localhost:3002/apis/v1/test/helloworld` to invoke the `helloworld` workflow. Additional workflows can be tested by invoking them in the same manner (e.g., `v1/test/helloworld`, `v1/test/child`, `v1/test/parent`, `v1/test/looper`, `v1/test/remote`, `v1/test/retry`, `v1/test/saludar`, `v1/test/sleep`).
 
 ## Telemetry Keys
 *Optionally*, add a `.env` file to the project root and include your keys for honeycomb open telemetry if you wish to use the default tracer configuration located in `./services/tracer.ts`. The following keys are required to enable the default tracer in this project (but you can add your own tracer configuration and supporting keys if you use a different OpenTelemetry provider).
