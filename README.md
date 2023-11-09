@@ -65,7 +65,7 @@ export async function waitExample(name: string): Promise<[SignalMsg, SignalMsg]>
 }
 ```
 
-Kick of the `wait` workflow by calling `http://localhost:3002/apis/v1/test/wait` from a browser or your HTTP client. *The call will hang until the workflow is signaled with the 'abc' and 'xyz' signals.*
+Kick off the `wait` workflow by calling `http://localhost:3002/apis/v1/test/wait` from a browser or your HTTP client. *The call will hang until the workflow is signaled with the 'abc' and 'xyz' signals.*
 
 While the initial call is hanging, open another HTTP client (or a browser) and signal the workflow by calling `http://localhost:3002/apis/v1/signal/abc` and `http://localhost:3002/apis/v1/signal/xyz`.
 
