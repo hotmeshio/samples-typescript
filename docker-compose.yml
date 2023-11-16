@@ -2,9 +2,9 @@ version: '3.9'
 
 services:
   redis6371:
-    image: redis:latest
     container_name: redis6371
-    command: ["redis-server", "--requirepass", "key_admin", "--port", "6371"]
+    image: redis/redis-stack:latest
+    command: ["redis-server", "--requirepass", "key_admin", "--port", "6371", "--loadmodule", "/opt/redis-stack/lib/redisearch.so"]
     ports:
       - "6371:6371"
     healthcheck:

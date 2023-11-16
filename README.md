@@ -1,73 +1,86 @@
-# samples-typescript
-This repo demonstrates the use of HotMesh in a TypeScript environment. The samples are built using HotMesh's `Durable` module which is an emulation of Temporal's TypeScript SDK. Examples include `proxyActivities`, `executeChild`, `sleep`, and `retry`.
+# HotMesh TypeScript Examples
 
-Here, for example, is the `looper` workflow. It calls two activities *sequentially* and three child workflows in *parallel*. The workflow is defined in `./services/durable/looper/workflows.ts`:
+This repo demonstrates the use of HotMesh in a TypeScript environment. The examples shown are traditional TypeScript functions, but they are run as **reentrant processes**. It's invisible to the developer, but the functions are executed in a distributed environment, with all the benefits of a distributed system, including fault tolerance, scalability, and high availability.
+
+All state-related code is managed by Redis. Write functions in your own preferred style, and HotMesh will handle the function execution. *Write functions according to your business case, not according to the limitations of your tools.*
+
+## Understanding State Management
+
+As engineers, we're constantly navigating state. Let's consider a simple function that adds numbers:
+
+```typescript
+function addNumbers(a: number, b: number): number {
+  const sum = a + b;
+  return sum;
+}
+```
+
+In this snippet, there's state management between each line as the computer processes the operations. While the risk of state inconsistencies in pure functions like this is negligible, the complexity escalates when we interact with external services, including microservices. This is where state management enters our consciousness as engineers. We might not quantify it directly, but our cumulative experience manifests in an ever-growing collection of try/catch blocks and state-related glue code, a testament to our efforts in mitigating state risks.
+
+## Repository Overview
+
+This repository is a compilation of examples demonstrating the use of `HotMesh`. These examples are not just code snippets; they are a narrative of how addressing state can lead to more robust and maintainable software.
+
+### The 'Sleep' Workflow
+
+One of the simplest examples to illustrate this principal is the 'sleep' workflow. This workflow illustrates how a system can pause for an extended period (months or years!) and then resume seamlessly. The design ensures that the function doesn't remain active during this period. Instead, Redis will send a message to the stream when it's time to awaken. Here's the function:
 
 ```typescript
 import { Durable } from '@hotmeshio/hotmesh';
 import * as activities from './activities';
 
-const { looper } = Durable.workflow
-  .proxyActivities<typeof activities>({ activities });
+const { hi, bye } = Durable.workflow.proxyActivities<typeof activities>({ activities });
 
-export async function looperExample(name: string): Promise<Record<string, string>> {
-  const loopVal1 = await looper(`${name} - 1`);
-  const loopVal2 = await looper(`${name} - 2`);
+export async function sleepExample(name: string): Promise<string[]> {
+  const response1 = await hi(name);
+  await Durable.workflow.sleep('1 week');
+  const response2 = await bye(name);
 
-  const [
-    parentWorkflowOutput,
-    childWorkflowOutput,
-    helloworldWorkflowOutput,
-  ] = await Promise.all([
-
-    Durable.workflow.executeChild<string>({
-      args: [`${name} to PARENT`],
-      taskQueue: 'parent',
-      workflowName: 'parentExample',
-      workflowId: '-'
-    }),
-  
-    Durable.workflow.executeChild<string>({
-      args: [`${name} to CHILD`],
-      taskQueue: 'child',
-      workflowName: 'childExample',
-      workflowId: '-'
-    }),
-
-    Durable.workflow.executeChild<string>({
-      args: [`${name} to HELLOWORLD`],
-      taskQueue: 'helloworld',
-      workflowName: 'helloworldExample',
-      workflowId: '-'
-    }),
-  ]);
-
-  return {
-    loopVal1,
-    loopVal2,
-    parentWorkflowOutput,
-    childWorkflowOutput,
-    helloworldWorkflowOutput
-  };
+  return [response1, response2];
 }
 ```
 
-The `wait` workflow example waits for 2 external signals before awakening. The workflow is defined in `./services/durable/wait/workflows.ts`:
+Critically, the `hi` function only executes once and the value is memoized by Redis. After 1 week, the function will awaken and use cached data from the previous execution (from last week).
+
+### The 'Wait' Workflow
+
+The `wait` workflow demonstrates HotMesh's ability to respond to external triggers. The workflow remains idle, awaiting two specific signals before proceeding. This example is particularly useful for understanding how HotMesh handles asynchronous events and external dependencies.
+
+Find the workflow defined in `./services/durable/wait/workflows.ts`:
 
 ```typescript
 import { Durable } from '@hotmeshio/hotmesh';
+import * as activities from '../sleep/activities';
 
-type SignalMsg = Record<string, string>;
+const { hi, bye } = Durable.workflow.proxyActivities<typeof activities>({ activities });
 
-export async function waitExample(name: string): Promise<[SignalMsg, SignalMsg]> {
-  //this will hang until the workflow is signaled with the 'abc' and 'xzy' signals
-  return await Durable.workflow.waitForSignal(['abc','xyz']);
-}
+export async function waitExample(name: string): Promise<any[]> {
+  const response1 = await hi(name);
+  const [abc, xyz] = await Durable.workflow.waitForSignal(['abc', 'xyz']);
+  const response2 = await bye(name);
+
+  return [response1, response2, abc, xyz];
+} 
 ```
 
-Kick off the `wait` workflow by calling `http://localhost:3002/apis/v1/test/wait` from a browser or your HTTP client. *The call will hang until the workflow is signaled with the 'abc' and 'xyz' signals.*
+As before, the `hi` function in this example only executes once and the value is memoized by Redis. After both signals `abc` and `xyz` are received, the function will awaken and use cached data from the previous execution. It does not matter the order in which the signals are received. The workflow will not proceed until both signals are received, providing *signal event collation* without all the glue code.
 
-While the initial call is hanging, open another HTTP client (or a browser) and signal the workflow by calling `http://localhost:3002/apis/v1/signal/abc` and `http://localhost:3002/apis/v1/signal/xyz`.
+
+#### Executing the 'Wait' Workflow
+
+1. **Initiate the Workflow**: Start the `wait` workflow by navigating to `http://localhost:3002/apis/v1/test/wait` in your browser or through an HTTP client. The workflow will pause, waiting for the necessary signals.
+
+2. **Send the Signals**: While the initial call is paused, send the required signals to the workflow. Use another HTTP client or browser window to send signals to `http://localhost:3002/apis/v1/signal/abc` and `http://localhost:3002/apis/v1/signal/xyz`.
+
+>You can send any object type when sending a signal. The signal will be stored in Redis and retrieved by the workflow when it resumes in the order defined in your function code.
+
+```typescript
+//initialize the HotMesh Durable client
+//...
+
+//send the signal
+durableClient.workflow.signal(signalId, payload);
+```
 
 ## Docker-Compose
 

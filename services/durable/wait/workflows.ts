@@ -1,12 +1,12 @@
 import { Durable } from '@hotmeshio/hotmesh';
+import * as activities from '../sleep/activities';
 
-type SignalPayload = Record<string, string>;
+const { hi, bye } = Durable.workflow.proxyActivities<typeof activities>({ activities });
 
-export async function waitExample(name: string): Promise<[SignalPayload, SignalPayload]> {
-  console.log('I am waiting for the abc and xyz signal.');
+export async function waitExample(name: string): Promise<any[]> {
+  const response1 = await hi(name);
+  const [abc, xyz] = await Durable.workflow.waitForSignal(['abc', 'xyz']);
+  const response2 = await bye(name);
 
-  //wait for the collated signals
-  const [abc, xyz] = await Durable.workflow.waitForSignal(['abc','xyz']);
-
-  return [abc, xyz];
-}
+  return [response1, response2, abc, xyz];
+} 
