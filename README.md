@@ -1,8 +1,8 @@
 # HotMesh TypeScript Examples
 
-This repo demonstrates the use of HotMesh in a TypeScript environment. The examples shown are traditional TypeScript functions, but they are run as **reentrant processes**. It's invisible to the developer, but the functions are executed in a distributed environment, with all the benefits of a distributed system, including fault tolerance, scalability, and high availability.
+This repo demonstrates the use of HotMesh in a TypeScript environment. The examples shown are traditional TypeScript functions. But they are run as **reentrant processes** and are executed in a distributed environment, with all the benefits of a distributed system, including fault tolerance, scalability, and high availability.
 
-All state-related code is managed by Redis. Write functions in your own preferred style, and HotMesh will handle the function execution. *Write functions according to your business case, not according to the limitations of your tools.*
+All state-related code is managed by Redis. Write functions in your own preferred style, and HotMesh will handle the function execution.
 
 ## Understanding State Management
 
@@ -23,7 +23,7 @@ This repository is a compilation of examples demonstrating the use of `HotMesh`.
 
 ### The 'Sleep' Workflow
 
-One of the simplest examples to illustrate this principal is the 'sleep' workflow. This workflow illustrates how a system can pause for an extended period (months or years!) and then resume seamlessly. The design ensures that the function doesn't remain active during this period. Instead, Redis will send a message to the stream when it's time to awaken. Here's the function:
+One of the simplest examples to illustrate this principal is the 'sleep' workflow. This workflow illustrates how a system can pause for an extended period (months or years!) and then resume seamlessly. The design ensures that the function doesn't remain active during this period. Instead, Redis will send a message to the stream when it's time to awaken.
 
 ```typescript
 import { Durable } from '@hotmeshio/hotmesh';
@@ -40,11 +40,11 @@ export async function sleepExample(name: string): Promise<string[]> {
 }
 ```
 
-Critically, the `hi` function only executes once and the value is memoized by Redis. After 1 week, the function will awaken and use cached data from the previous execution (from last week).
+Critically, the `hi` function only executes *once*, and the value is memoized by Redis. After 1 week, the function will awaken and use cached data from the previous execution (from last week).
 
 ### The 'Wait' Workflow
 
-The `wait` workflow demonstrates HotMesh's ability to respond to external triggers. The workflow remains idle, awaiting two specific signals before proceeding. This example is particularly useful for understanding how HotMesh handles asynchronous events and external dependencies.
+The `wait` workflow demonstrates HotMesh's ability to respond to external triggers. The workflow remains idle, awaiting two specific signals before proceeding. This example is particularly useful for understanding how HotMesh can incorporate asynchronous events and external dependencies.
 
 Find the workflow defined in `./services/durable/wait/workflows.ts`:
 
@@ -65,7 +65,6 @@ export async function waitExample(name: string): Promise<any[]> {
 
 As before, the `hi` function in this example only executes once and the value is memoized by Redis. After both signals `abc` and `xyz` are received, the function will awaken and use cached data from the previous execution. It does not matter the order in which the signals are received. The workflow will not proceed until both signals are received, providing *signal event collation* without all the glue code.
 
-
 #### Executing the 'Wait' Workflow
 
 1. **Initiate the Workflow**: Start the `wait` workflow by navigating to `http://localhost:3002/apis/v1/test/wait` in your browser or through an HTTP client. The workflow will pause, waiting for the necessary signals.
@@ -80,6 +79,67 @@ As before, the `hi` function in this example only executes once and the value is
 
 //send the signal
 durableClient.workflow.signal(signalId, payload);
+```
+
+### The 'Retry' Workflow
+Workflow functions are designed to re-run until they succeed. It is possible to throw a fatal error that will truly stop a workflow (`DurableFatalError`), but in general the workflow will retry an action until it succeeds. The [retry](./services/durable/retry/workflows.ts) example includes an activity that throws random errors. Increase the threshold to 99%, and the workflow will still succeed (although that might happen some time next week).
+
+```typescript
+export async function unpredictableFunction(name: string): Promise<string> {
+  if (Math.random() < 0.5) {
+    throw new Error('Random error');
+  }
+  return `Hello, ${name}!`;
+}
+```
+
+The workflow code includes no affordances for retrying this function. Instead of coming up with an endless laundry list of everything that might go wrong and then writing try/catch statements to handle each scenario, you can just write the code that you want to execute and let HotMesh handle the retries. Add limits like *backoff* and *max retries* as desired, but the default is to retry until it succeeds.
+
+```typescript
+import { Durable } from '@hotmeshio/hotmesh';
+import * as activities from './activities';
+
+const { unpredictableFunction } = Durable.workflow.proxyActivities<typeof activities>({ activities });
+
+export async function retryExample(name: string): Promise<string> {
+  return await unpredictableFunction(name);
+}
+```
+
+### Search and Query
+In addition to solving state problems like collation and memoization, HotMesh also provides a mechanism for storing and retrieving workflow state. This is particularly useful for long-running workflows. For example, you might have a workflow that tracks the order status of a product. The workflow might be initiated when the order is placed and then pause for several months until the product is ready to ship. During that time, the workflow might be updated with the status of the order. In the background the Redis FT search module is indexing the workflow state, allowing you to query all running workflows for particular search term(s). For all other deployments, the workflow state is still stored in Redis and can be retrieved at any time using standard HGET, HSCAN, HGETALL commands.
+
+```typescript
+import { Durable } from '@hotmeshio/hotmesh';
+import * as activities from './activities';
+
+const { hi, bye } = Durable.workflow.proxyActivities<typeof activities>({ activities });
+
+export async function stateExample(name: string): Promise<string[]> {
+  const response1 = await hi(name);
+
+  //init the durable search client; bind searchable data to the workflow
+  const search = await Durable.workflow.search();
+
+  //save any arbitrary term
+  await search.set('hi', response1);
+
+  //increment a counter
+  await search.incr('counter', 11);
+
+  //change values to indicate workflow state
+  search.set('sleeping', 'true');
+  await Durable.workflow.sleep('90 seconds');
+  await search.set('sleeping', 'false');
+
+  return [response1, await search.get('hi'), await search.get('sleeping')];
+}
+```
+
+Locate any document using a Redis `FT.search` command. For example, retrieve workflows that are currently sleeping.
+
+```bash
+FT.SEARCH <yourindexname> "@_sleeping:true"
 ```
 
 ## Docker-Compose
