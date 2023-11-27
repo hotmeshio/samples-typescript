@@ -15,7 +15,7 @@ function addNumbers(a: number, b: number): number {
 }
 ```
 
-In this snippet, there's state management between each line as the computer processes the operations. While the risk of state inconsistencies in pure functions like this is negligible, the complexity escalates when we interact with external services, including microservices. This is where state management enters our consciousness as engineers. We might not quantify it directly, but our cumulative experience manifests in an ever-growing collection of try/catch blocks and state-related glue code, a testament to our efforts in mitigating state risks.
+In this snippet, there's state management between each line as the computer processes the operations. While the risk of state inconsistencies in pure functions like this is negligible, the complexity escalates when we interact with other services (even other  microservices within the same VPC). This is where state management enters our consciousness as engineers. We might not quantify it directly, but our cumulative experience manifests in an ever-growing collection of try/catch blocks and state-related glue code, a testament to our efforts in mitigating state risks.
 
 ## Repository Overview
 
