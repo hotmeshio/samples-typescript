@@ -107,7 +107,7 @@ export async function retryExample(name: string): Promise<string> {
 ```
 
 ### Search and Query
-In addition to solving state problems like collation and memoization, HotMesh also provides a mechanism for storing and retrieving workflow state. This is particularly useful for long-running workflows. For example, you might have a workflow that tracks the order status of a product. The workflow might be initiated when the order is placed and then pause for several months until the product is ready to ship. During that time, the workflow might be updated with the status of the order. In the background the Redis FT search module is indexing the workflow state, allowing you to query all running workflows for particular search term(s). For all other deployments, the workflow state is still stored in Redis and can be retrieved at any time using standard HGET, HSCAN, HGETALL commands.
+HotMesh provides a mechanism for storing and retrieving workflow state.
 
 ```typescript
 import { Durable } from '@hotmeshio/hotmesh';
@@ -128,18 +128,12 @@ export async function stateExample(name: string): Promise<string[]> {
   await search.incr('counter', 11);
 
   //change values to indicate workflow state
-  search.set('sleeping', 'true');
+  await search.set('sleeping', 'true');
   await Durable.workflow.sleep('90 seconds');
   await search.set('sleeping', 'false');
 
   return [response1, await search.get('hi'), await search.get('sleeping')];
 }
-```
-
-Locate any document using a Redis `FT.search` command. For example, retrieve workflows that are currently sleeping.
-
-```bash
-FT.SEARCH <yourindexname> "@_sleeping:true"
 ```
 
 ## Docker-Compose
