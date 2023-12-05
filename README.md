@@ -2,43 +2,46 @@
 
 This repo demonstrates the use of HotMesh in a TypeScript environment. The examples shown are traditional TypeScript functions. But they are run as **reentrant processes** and are executed in a distributed environment, with all the benefits of a distributed system, including fault tolerance, scalability, and high availability.
 
-All state-related code is managed by Redis. Write functions in your own preferred style, and HotMesh will handle the function execution. Consider the following function that is executed as a workflow:
+All state-related code is managed by Redis. Write functions in your own preferred style, and HotMesh will handle the function execution. Consider the [retry](services/meshos/retry.ts) example that is executed as a workflow:
 
 ```typescript
 import Redis from 'ioredis';
 import { MeshOS } from '@hotmeshio/hotmesh';
 
-export class MyHowdyClass extends MeshOS {
+export class MyRetryClass extends MeshOS {
 
   redisClass = Redis;
 
   redisOptions = { host: 'localhost', port: 6379 };
 
-  workflowFunctions = ['ciao'];
-  proxyFunctions = ['howdy'];
+  workflowFunctions = ['retryMe'];
+  proxyFunctions = ['pleaseRetry'];
 
-  async ciao(name: string): Promise<string> {
-    return await this.howdy(name);
+  async retryMe(name: string): Promise<string> {
+    return await this.pleaseRetry(name);
   }
 
-  async howdy(name: string): Promise<string> {
-    return `Hello ${name}!`;
+  async pleaseRetry(name: string): Promise<string> {
+    if (Math.random() < 0.5) {
+      throw new Error('Please retry');
+    }
+    return `Hello Retry ${name}!`;
   }
 }
 ```
 
-If you run the function as a vanilla NodeJS function (without passing a GUID), it will execute as usual governed by NodeJS.
+If you run the function as a vanilla NodeJS function (without passing a GUID), it will execute as usual governed by NodeJS and will fail 50% of the time.
 
 ```typescript
-//run your functions as vanilla nodejs code
-await new MyHowdyClass().ciao('fred');
+await new MyRetryClass().retryMe('LukeWarmMesh');
+//Error: Please retry | Hello Retry LukeWarmMesh!
   ```
 
-But if you provide a workflow GUID to the constructor, the functions will be executed as a distributed workflow:
+But if you provide a workflow GUID to the constructor, the functions will be executed as a distributed workflow across the microservices fleet. The function may throw some errors, but it will eventually succeed as Redis will manage the execution.
 
 ```typescript
-//run your functions as distributed workflows
-await new MyHowdyClass('myguid', { await: true }).ciao('fred');
+await new MyRetryClass('myguid', { await: true }).retryMe('LukeWarmMesh');
+//Hello Retry LukeWarmMesh!
 ```
 
 ## Repository Overview
