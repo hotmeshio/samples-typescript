@@ -4,7 +4,13 @@ import { Durable } from '@hotmeshio/hotmesh';
 
 import { setupTelemetry } from '../services/tracer'
 import { registerTestRoutes } from './routes/test';
-import initDurableWorker from '../services/durable/worker';
+import { MyHowdyClass } from '../services/meshos/howdy';
+import { MySleepyClass } from '../services/meshos/sleepy';
+import { MyFamilyClass } from '../services/meshos/family';
+import { MyLoopyClass } from '../services/meshos/loopy';
+import { OrderInventory } from '../services/meshos/inventory';
+import { MySignalClass } from '../services/meshos/signal';
+import { MyRetryClass } from '../services/meshos/retry';
 
 const start = async (port: number) => {
   // setup open telemetry (sink/export to honeycomb...see README.md)
@@ -16,21 +22,18 @@ const start = async (port: number) => {
   // register test route (/apis/v1/test/:workflowName)
   registerTestRoutes(server);
 
-  // start the workers; most will run in the main
-  // process, but a second node instance is declared
-  // in the docker-compose.yml file that will run
-  // the `remote` and `child` workers
-  if (process.env.IS_REMOTE_HOST) {
-    await initDurableWorker('remote');
-    await initDurableWorker('child');
-  }
-  await initDurableWorker('helloworld');
-  await initDurableWorker('saludar');
-  await initDurableWorker('sleep');
-  await initDurableWorker('parent');
-  await initDurableWorker('looper');
-  await initDurableWorker('retry');
-  await initDurableWorker('wait');
+  // start the workers
+  await MyHowdyClass.startWorkers();
+  await MySleepyClass.startWorkers();
+  await MyLoopyClass.startWorkers();
+  await MyFamilyClass.startWorkers();
+  await MySignalClass.startWorkers();
+  await MyRetryClass.startWorkers();
+
+  //order inventory has a FT search index
+  //(find orders by quantity and status)
+  await OrderInventory.startWorkers();
+  await OrderInventory.createIndex();
 
   // start fastify
   try {

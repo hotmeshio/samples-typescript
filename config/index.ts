@@ -7,6 +7,9 @@ const baseConfig = {
   REDIS_PORT: 6371,
   REDIS_HOST: 'redis6371',
   REDIS_PASSWORD: 'key_admin',
+
+  // used in Redis as the key prefix
+  namespace: 'test',
 };
 
 const envConfig = {
