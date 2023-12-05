@@ -13,4 +13,3 @@ export class MyHowdyClass extends MeshOSConfig {
     return `Hello ${name}!`;
   }
 }
-  

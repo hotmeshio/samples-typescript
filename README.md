@@ -2,7 +2,44 @@
 
 This repo demonstrates the use of HotMesh in a TypeScript environment. The examples shown are traditional TypeScript functions. But they are run as **reentrant processes** and are executed in a distributed environment, with all the benefits of a distributed system, including fault tolerance, scalability, and high availability.
 
-All state-related code is managed by Redis. Write functions in your own preferred style, and HotMesh will handle the function execution.
+All state-related code is managed by Redis. Write functions in your own preferred style, and HotMesh will handle the function execution. Consider the following function that is executed as a workflow:
+
+```typescript
+import Redis from 'ioredis';
+import { MeshOS } from '@hotmeshio/hotmesh';
+
+export class MyHowdyClass extends MeshOS {
+
+  redisClass = Redis;
+
+  redisOptions = { host: 'localhost', port: 6379 };
+
+  workflowFunctions = ['ciao'];
+  proxyFunctions = ['howdy'];
+
+  async ciao(name: string): Promise<string> {
+    return await this.howdy(name);
+  }
+
+  async howdy(name: string): Promise<string> {
+    return `Hello ${name}!`;
+  }
+}
+```
+
+If you run the function as a vanilla NodeJS function (without passing a GUID), it will execute as usual governed by NodeJS.
+
+```typescript
+//run your functions as vanilla nodejs code
+await new MyHowdyClass().ciao('fred');
+  ```
+
+But if you provide a workflow GUID to the constructor, the functions will be executed as a distributed workflow:
+
+```typescript
+//run your functions as distributed workflows
+await new MyHowdyClass('myguid', { await: true }).ciao('fred');
+```
 
 ## Repository Overview
 
