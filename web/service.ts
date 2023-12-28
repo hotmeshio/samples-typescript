@@ -1,6 +1,5 @@
 import 'dotenv/config'
 import fastify from 'fastify';
-import { Durable } from '@hotmeshio/hotmesh';
 
 import { setupTelemetry } from '../services/tracer'
 import { registerTestRoutes } from './routes/test';
@@ -42,8 +41,16 @@ const start = async (port: number) => {
 
     async function shutdown() {
       server.close(async () => {
-        await Durable.Client.shutdown();
-        await Durable.Worker.shutdown();
+        // stop the workers
+        await Promise.all([
+          MyHowdyClass.stopWorkers(),
+          MySleepyClass.stopWorkers(),
+          MyLoopyClass.stopWorkers(),
+          MyFamilyClass.stopWorkers(),
+          MySignalClass.stopWorkers(),
+          MyRetryClass.stopWorkers(),
+          OrderInventory.stopWorkers()
+        ]);        
         process.exit(0);
       });
     }

@@ -5,6 +5,9 @@ import config from '../../config';
 
 export class MeshOSConfig extends MeshOS {
 
+  //every subclass is isolated in Redis by this
+  namespace = 'staging';
+
   redisClass = Redis;
 
   redisOptions = {
@@ -14,4 +17,3 @@ export class MeshOSConfig extends MeshOS {
     db: config.REDIS_DATABASE,
   };
 }
-  

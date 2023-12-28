@@ -1,4 +1,4 @@
-import { MeshOSConfig } from './config';
+import { MeshOSConfig } from '../config';
 
 export class MySignalClass extends MeshOSConfig {
 

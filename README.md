@@ -1,18 +1,10 @@
 # HotMesh TypeScript Examples
-
 This repo demonstrates the use of HotMesh in a TypeScript environment. The examples shown are traditional TypeScript functions. But they are run as **reentrant processes** and are executed in a distributed environment, with all the benefits of a distributed system, including fault tolerance, scalability, and high availability.
 
-All state-related code is managed by Redis. Write functions in your own preferred style, and HotMesh will handle the function execution. Consider the [retry](services/meshos/retry.ts) example that is executed as a workflow:
+With HotMesh, all state-related code is managed by Redis. Write functions in your own preferred style, and HotMesh will handle the function governance and execution. Consider the [retry](services/meshos/retry/index.ts) example that is executed as a workflow:
 
 ```typescript
-import Redis from 'ioredis';
-import { MeshOS } from '@hotmeshio/hotmesh';
-
-export class MyRetryClass extends MeshOS {
-
-  redisClass = Redis;
-
-  redisOptions = { host: 'localhost', port: 6379 };
+class MyRetryClass extends MeshOS {
 
   workflowFunctions = ['retryMe'];
   proxyFunctions = ['pleaseRetry'];
@@ -30,26 +22,27 @@ export class MyRetryClass extends MeshOS {
 }
 ```
 
-If you run the function as a vanilla NodeJS function (without passing a GUID), it will execute as usual governed by NodeJS and will fail 50% of the time.
+If you invoke the function as a vanilla NodeJS function, it will execute as usual governed by NodeJS, *and it will fail 50% of the time*.
 
 ```typescript
-await new MyRetryClass().retryMe('LukeWarmMesh');
-//Error: Please retry | Hello Retry LukeWarmMesh!
-  ```
+await new MyRetryClass().retryMe('World');
+//<Error: `Please retry`> OR `Hello Retry World!` 🤷
+```
 
-But if you provide a workflow GUID to the constructor, the functions will be executed as a distributed workflow across the microservices fleet. The function may throw some errors, but it will eventually succeed as Redis will manage the execution.
+But if you provide a workflow GUID, HotMesh will intercept the call and distribute it as a durable workflow across your microservices. Your function might throw some errors along the way, but it will eventually succeed.
 
 ```typescript
-await new MyRetryClass('myguid', { await: true }).retryMe('LukeWarmMesh');
-//Hello Retry LukeWarmMesh!
+await new MyRetryClass({ id: 'myguid', await: true }).retryMe('World');
+//`Hello Retry World!`
 ```
 
 ## Repository Overview
 
-This repository is a compilation of examples demonstrating the use of `HotMesh`. Refer to the [/meshos directory](/services/meshos/) for usage examples, including: executeChild, startChild, hook, signal, waitForSignal, proxyActivity, etc.
+This repository is a compilation of examples demonstrating the use of `HotMesh`. Refer to the [/meshos directory](/services/meshos/) for usage examples, including: `executeChild`, `startChild`, `hook`, `signal`, `waitForSignal`, `proxyActivity`, `sleep`, `random`, `get`, `set`, `incr`, etc. 
+
+A critical step in the deployment process is starting and stopping your workers. This is typically done when you start and stop your microservices container. Refer to the [services.ts](./web/service.ts) module for an example of how to *start* and *stop* workers.
 
 ## Docker-Compose
-
 The docker-compose configuration spins up **two** Node instances and 1 Redis instance (on port 6371). Workflows run on both as the workloads are distributed.
 
 ## Build

@@ -1,6 +1,6 @@
 import { WorkflowSearchOptions } from '@hotmeshio/hotmesh/build/types';
 
-import { MeshOSConfig } from './config';
+import { MeshOSConfig } from '../config';
 
 /**
  * An Order Inventory class. This is an example

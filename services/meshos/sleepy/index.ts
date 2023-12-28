@@ -1,7 +1,7 @@
 import Redis from 'ioredis';
 import { MeshOS } from '@hotmeshio/hotmesh';
 
-import config from '../../config';
+import config from '../../../config';
 
 export class MySleepyClass extends MeshOS {
 

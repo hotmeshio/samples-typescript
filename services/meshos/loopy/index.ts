@@ -1,4 +1,4 @@
-import { MeshOSConfig } from './config';
+import { MeshOSConfig } from '../config';
 
 export class MyLoopyClass extends MeshOSConfig {
 
@@ -8,7 +8,7 @@ export class MyLoopyClass extends MeshOSConfig {
   async loop(count: number): Promise<string[]> {
     const response = [];
     for (let i = 0; i < count; i++) {
-      response.push(await this.loopy(i));
+      response.push(`${await this.loopy(i)} ${MeshOSConfig.MeshOS.random()}`);
     }
     return response;
   }
