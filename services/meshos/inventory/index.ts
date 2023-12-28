@@ -40,19 +40,17 @@ export class OrderInventory extends MeshOSConfig {
    * main workflow function; while running, the record is open
    * and can be updated by other hook functions
    */
-  async create(quantity: number): Promise<{quantity: number, status: string}> {
+  async create(quantity: number): Promise<{quantity: number, status: string, timestamp: number}> {
+    //seed the initial quantity and set as 'available'
     await this.setQuantity(quantity, 'available');
 
-    //use 'waitForSignal' to leave open indefinitely
-    await OrderInventory.MeshOS.sleep('11 seconds');
+    //use 'waitForSignal' to listen for the 'depleted' event
+    const [depleted] = await OrderInventory.MeshOS.waitForSignal([`${this.id}_depleted`]);
 
     //return (the order will now self-delete)
     const search = await OrderInventory.MeshOS.search();
-    const [remaining, status] = await Promise.all([
-      search.get('quantity'),
-      search.get('status')
-    ]);
-    return { quantity: Number(remaining), status };
+    const [remaining, status] = await search.mget('quantity', 'status');
+    return { quantity: Number(remaining), status, timestamp: depleted.timestamp };
   }
 
   /**
@@ -65,6 +63,7 @@ export class OrderInventory extends MeshOSConfig {
       const amount = await search.incr('quantity', quantity);
       if (amount <= 0) {
         await this.setStatus('depleted');
+        await OrderInventory.MeshOS.signal(`${this.id}_depleted`, { timestamp: Date.now() });
       }
     }
   }

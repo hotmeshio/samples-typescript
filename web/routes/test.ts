@@ -41,14 +41,48 @@ export const registerTestRoutes = (server: FastifyInstance) => {
         const response = await retryFlow.retryMe('janice');
         return reply.code(200).send({ response });
       } else if (workflowName === 'inventory') {
-        //this test 'runs' for 11 seconds. During that time,
-        //it can be updated by other methods (e.g. incrQuantity)
+        //create a new inventory record (seed with '1' item)
         const orderInventory = new OrderInventory(`ord_${HotMesh.guid()}`);
         const handle = await orderInventory.create(1) as unknown as WorkflowHandleService;
-        await new Promise((resolve) => setTimeout(resolve, 1_000));
-        //decrement quantity
-        await orderInventory.incrQuantity(-1);
-        return reply.code(200).send({ response: await handle.result() });
+
+        //wait until the inventory is available and then decrement 1 unit
+        //by calling the 'incrQuantity' hook method
+        let count: number;
+        do {
+          [count] = await OrderInventory.findWhere(
+            { query: [
+                { field: 'status', is: '=', value: 'available' }
+              ],
+              count: true
+            }) as unknown as [number];
+          await new Promise((resolve) => setTimeout(resolve, 100));
+        } while (count as number === 0);
+
+        //wait for the receipt from the `incrQuantity` hook method;
+        //the receipt is an x-stream message ID and guarantees that
+        //the hook method will complete (but it does not guarantee WHEN)
+        const receipt = await orderInventory.incrQuantity(-1);
+
+        //wait until the inventory is depleted. NOTE: This is only
+        // placed in a loop, since the `incrQuantity` method above
+        // is a 'hook' method and does not guarantee WHEN, only
+        // that the method will succeed. In reality, the `incrQuantity` call
+        // is near-instantanious and the hook will have completed by this point.
+        do {
+          [count] = await OrderInventory.findWhere(
+            { query: [
+                { field: 'status', is: '=', value: 'depleted' }
+              ],
+              count: true
+            }) as unknown as [number];
+          await new Promise((resolve) => setTimeout(resolve, 100));
+        } while (count as number === 0);
+
+        //the 'create' function waits for the 'depleted' signal; when it awakens,
+        //it will return its result (which should be {status: 'depleted'}) and
+        //it will likewise self-delete as the 'create' method will have returned
+        //its result. (workflows self-delete when they conclude.)
+        return reply.code(200).send({ response: await handle.result(), receipt });
       }
       return reply.code(200).send({ response: `${workflowName} is unsupported` });
     } catch (err) {
