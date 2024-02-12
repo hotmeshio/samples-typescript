@@ -3,6 +3,7 @@ interface Params {
   topic: string;
   workflowName: string;
   [field: string]: string;
+  id: string;
 }
 
 interface Body {

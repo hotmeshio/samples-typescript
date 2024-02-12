@@ -9,13 +9,32 @@ import { OrderInventory } from '../../services/meshos/inventory';
 import { WorkflowHandleService } from '@hotmeshio/hotmesh/build/services/durable/handle';
 import { MySignalClass } from '../../services/meshos/signal';
 import { MyRetryClass } from '../../services/meshos/retry';
+import { pluck } from '../../services/pluck/config';
 
 export const registerTestRoutes = (server: FastifyInstance) => {
   server.get<{ Params: Params; QueryString: Query }>(`/apis/v1/test/:workflowName`, async (request, reply) => {
     try {
       let { workflowName } = request.params;
       //start workflows via GET http://localhost:3002/apis/v1/test/:workflowName
-      if (workflowName === 'howdy') {
+      if (workflowName === 'user') {
+        //create a new user instance
+        const guid = HotMesh.guid();
+        const user = await pluck.exec(
+          'user',
+          [`${guid}@pluck.com`],
+          {
+            ttl: 'infinity',
+            id: guid,
+            search: {
+              data: {
+                guid,
+                email: `${guid}@pluck.com`,
+                active: 'true'
+              }
+            }
+        });
+        return { user }
+      } else if (workflowName === 'howdy') {
         const howdyWorkflow = new MyHowdyClass(HotMesh.guid(), { await: true });
         const response = await howdyWorkflow.ciao('world');
         return reply.code(200).send({ response });

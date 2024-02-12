@@ -10,6 +10,10 @@ import { MyLoopyClass } from '../services/meshos/loopy';
 import { OrderInventory } from '../services/meshos/inventory';
 import { MySignalClass } from '../services/meshos/signal';
 import { MyRetryClass } from '../services/meshos/retry';
+import { User } from '../services/pluck/user';
+import { registerUserRoutes } from './routes/user';
+import { Bill } from '../services/pluck/bill';
+import { registerBillRoutes } from './routes/bill';
 
 const start = async (port: number) => {
   // setup open telemetry (sink/export to honeycomb...see README.md)
@@ -20,6 +24,14 @@ const start = async (port: number) => {
   
   // register test route (/apis/v1/test/:workflowName)
   registerTestRoutes(server);
+  registerUserRoutes(server);
+  registerBillRoutes(server);
+
+  // Pluck (connect ODL entities)
+  await User.connect();
+  await User.index();
+  await Bill.connect();
+  await Bill.index();
 
   // start the workers
   await MyHowdyClass.startWorkers();
@@ -43,13 +55,13 @@ const start = async (port: number) => {
       server.close(async () => {
         // stop the workers
         await Promise.all([
-          MyHowdyClass.stopWorkers(),
+          MyHowdyClass.stopWorkers()/*,
           MySleepyClass.stopWorkers(),
           MyLoopyClass.stopWorkers(),
           MyFamilyClass.stopWorkers(),
           MySignalClass.stopWorkers(),
           MyRetryClass.stopWorkers(),
-          OrderInventory.stopWorkers()
+          OrderInventory.stopWorkers()*/
         ]);        
         process.exit(0);
       });
