@@ -2,17 +2,9 @@ import 'dotenv/config'
 import fastify from 'fastify';
 
 import { setupTelemetry } from '../services/tracer'
-import { registerTestRoutes } from './routes/test';
-import { MyHowdyClass } from '../services/meshos/howdy';
-import { MySleepyClass } from '../services/meshos/sleepy';
-import { MyFamilyClass } from '../services/meshos/family';
-import { MyLoopyClass } from '../services/meshos/loopy';
-import { OrderInventory } from '../services/meshos/inventory';
-import { MySignalClass } from '../services/meshos/signal';
-import { MyRetryClass } from '../services/meshos/retry';
 import { User } from '../services/pluck/user';
 import { registerUserRoutes } from './routes/user';
-import { Bill } from '../services/pluck/bill';
+import { Bill, Pluck } from '../services/pluck/bill';
 import { registerBillRoutes } from './routes/bill';
 
 const start = async (port: number) => {
@@ -23,28 +15,14 @@ const start = async (port: number) => {
   const server = fastify({ logger: true });
   
   // register test route (/apis/v1/test/:workflowName)
-  registerTestRoutes(server);
   registerUserRoutes(server);
   registerBillRoutes(server);
 
-  // Pluck (connect ODL entities)
+  // register Pluck entities (operational data layer)
   await User.connect();
   await User.index();
   await Bill.connect();
   await Bill.index();
-
-  // start the workers
-  await MyHowdyClass.startWorkers();
-  await MySleepyClass.startWorkers();
-  await MyLoopyClass.startWorkers();
-  await MyFamilyClass.startWorkers();
-  await MySignalClass.startWorkers();
-  await MyRetryClass.startWorkers();
-
-  //order inventory has a FT search index
-  //(find orders by quantity and status)
-  await OrderInventory.startWorkers();
-  await OrderInventory.createIndex();
 
   // start fastify
   try {
@@ -53,16 +31,7 @@ const start = async (port: number) => {
 
     async function shutdown() {
       server.close(async () => {
-        // stop the workers
-        await Promise.all([
-          MyHowdyClass.stopWorkers()/*,
-          MySleepyClass.stopWorkers(),
-          MyLoopyClass.stopWorkers(),
-          MyFamilyClass.stopWorkers(),
-          MySignalClass.stopWorkers(),
-          MyRetryClass.stopWorkers(),
-          OrderInventory.stopWorkers()*/
-        ]);        
+        await Pluck.shutdown();  
         process.exit(0);
       });
     }

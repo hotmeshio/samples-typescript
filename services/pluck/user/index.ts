@@ -94,6 +94,7 @@ class User {
         }
       }
     );
+
     //echo the job state (the created user)
     return await this.retrieve(id);
   }
