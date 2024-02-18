@@ -1,4 +1,4 @@
-import { StringStringType, WorkflowSearchOptions } from '@hotmeshio/hotmesh/build/types';
+import { StringStringType, WorkflowSearchOptions } from '@hotmeshio/pluck/build/types';
 import config from '../../../config';
 import { MeshOS, Pluck, Redis } from '../config';
 
@@ -48,12 +48,19 @@ class Bill {
 //******************* ON-CONTAINER-STARTUP COMMANDS ********************
 
   /**
-   * Connect transactional functions
+   * Operationalize important functions
    */
   async connect() {
-    //'infinity' makes Pluck persistent
-    this.pluck.connect(this.entity, this.workflow.create, { ttl: 'infinity' });
-    this.pluck.connect(`${this.entity}.reconcile`, this.workflow.reconcile);
+    this.pluck.connect({
+      entity: this.entity,
+      target: this.workflow.create,
+      options: { ttl: 'infinity' }
+    });
+
+    this.pluck.connect({
+      entity: `${this.entity}.reconcile`,
+      target: this.workflow.reconcile
+    });
   } 
 
   /**

@@ -1,5 +1,5 @@
 import Redis from 'ioredis';
-import { MeshOS } from '@hotmeshio/hotmesh';
+import { MeshOS } from '@hotmeshio/pluck';
 
 import config from '../../../config';
 

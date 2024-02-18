@@ -1,4 +1,4 @@
-import { WorkflowSearchOptions } from '@hotmeshio/hotmesh/build/types';
+import { WorkflowSearchOptions } from '@hotmeshio/pluck/build/types';
 
 import { MeshOSConfig } from '../config';
 

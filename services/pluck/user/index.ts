@@ -52,10 +52,21 @@ class User {
    * Connect transactional functions
    */
   async connect() {
-    //'infinity' makes Pluck persistent
-    this.pluck.connect(this.entity, this.workflow.create, { ttl: 'infinity' });
-    this.pluck.connect(`${this.entity}.bill`, this.workflow.bill);
-    this.pluck.connect(`${this.entity}.notify`, this.workflow.notify);
+    this.pluck.connect({
+      entity: this.entity,
+      target: this.workflow.create,
+      options: { ttl: 'infinity' }
+    });
+
+    this.pluck.connect({
+      entity: `${this.entity}.bill`,
+      target: this.workflow.bill
+    });
+
+    this.pluck.connect({
+      entity: `${this.entity}.notify`,
+      target: this.workflow.notify
+    });
   } 
 
   /**
@@ -83,17 +94,17 @@ class User {
   async create(body: Record<string, any>) {
     const { id, email, first, last } = body;
     //call `pluck.exec` to add the user to the operational data layer (ODL)
-    await this.pluck.exec<string>(
-      this.entity,
-      [this.entity, id],
-      { id,
+    await this.pluck.exec<string>({
+      entity: this.entity,
+      args: [this.entity, id],
+      options: { id,
         search: {
           data: {
             '$entity': this.entity, active: 'true', id, email, first, last
           }
         }
       }
-    );
+    });
 
     //echo the job state (the created user)
     return await this.retrieve(id);
@@ -131,12 +142,12 @@ class User {
       await this.pluck.set(this.entity, id, { search: { data }});
       //start the billing hook if not already active
       if (active !== 'true') {
-        await this.pluck.hook(
-          this.entity,
+        await this.pluck.hook({
+          entity: this.entity,
           id,
-          `${this.entity}.bill`,
-          [data.plan, data.cycle, {}, {}]
-        );
+          hookEntity: `${this.entity}.bill`,
+          hookArgs: [data.plan, data.cycle, {}, {}]
+        });
       }
     } else {
       this.pluck.set(this.entity, id, { search: { data: { active: 'false' }}});
@@ -149,9 +160,9 @@ class User {
    */
   async delete(id: string) {
     //user will be fully removed within 2 minutes
-    const user = await this.retrieve(id);
+    await this.retrieve(id);
     await this.pluck.flush(this.entity, id);
-    return true
+    return true;
   }
 
   /**
@@ -181,7 +192,7 @@ class User {
   workflow = {
 
     async create(entity: string, id: string): Promise<string> {
-      const receipt = await Pluck.workflow.hook({
+      await Pluck.workflow.hook({
         entity: `${entity}.bill`,
         args: ['starter', 'monthly', {}],
       });
