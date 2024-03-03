@@ -24,7 +24,7 @@ class User {
       id: { type: 'TEXT', sortable: true },
       first: { type: 'TEXT', sortable: true },
       last: { type: 'TEXT', sortable: true },
-      email: { type: 'TAG', sortable: true }, //(@ symbol)
+      email: { type: 'TAG', sortable: true },
       active: { type: 'TAG', sortable: true },
       plan: { type: 'TAG', sortable: true },
       cycle: { type: 'TAG', sortable: true }
@@ -210,7 +210,6 @@ class User {
         });
         await Pluck.workflow.sleep('1 minute');
       };
-      console.log('plan cancelled', await search.get('id'));
     },
 
     async notify(channel: string, options: Record<any, string>) {
