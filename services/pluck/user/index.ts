@@ -92,7 +92,7 @@ class User {
    * Create User
    */
   async create(body: Record<string, any>) {
-    const { id, email, first, last } = body;
+    const { id, email, first, last, plan, cycle } = body;
     //call `pluck.exec` to add the user to the operational data layer (ODL)
     await this.pluck.exec<string>({
       entity: this.entity,
@@ -100,7 +100,15 @@ class User {
       options: { id,
         search: {
           data: {
-            '$entity': this.entity, active: 'true', id, email, first, last
+            '$entity': this.entity,
+            active: 'true',
+            id,
+            email,
+            first,
+            last,
+            plan,
+            cycle,
+            discount : '0',
           }
         }
       }
@@ -206,7 +214,10 @@ class User {
         const id = `bill-${nanoid()}`;
         await Pluck.workflow.executeChild({
           entity: 'bill',
-          args: [{ id, user_id, plan, cycle, amount, discount }],
+          args: [{
+            id, user_id, plan, cycle, amount,
+            discount, timestamp: Date.now()
+          }],
         });
         await Pluck.workflow.sleep('1 minute');
       };
