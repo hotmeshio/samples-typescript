@@ -1,0 +1,2 @@
+# Temporal Examples
+This directory contains examples taken directly from the Temporal documentation. The examples are written in TypeScript and can be run according to the instructions in the Temporal documentation.

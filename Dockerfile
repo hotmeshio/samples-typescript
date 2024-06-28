@@ -1,11 +1,16 @@
-# Base stage
-FROM node:19.8.1-alpine AS base
+# Start from the node:20-bullseye-slim base image
+FROM node:20-bullseye-slim AS base
+
 WORKDIR /app
+
 COPY package*.json ./
-RUN npm ci
+
+RUN npm install
+
 COPY . .
 
-# Development stage
-FROM base AS development
-ENV NODE_ENV=development
-CMD ["npm", "run", "service"]
+EXPOSE 3000
+
+# keep the container running
+CMD ["tail", "-f", "/dev/null"]
+

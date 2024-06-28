@@ -24,10 +24,8 @@ services:
       - /app/node_modules
 
   redis:
-    image: redis/redis-stack:7.2.0-v10
+    image: valkey/valkey:7.2.5
     platform: linux/amd64
-    environment:
-      REDIS_ARGS: "--requirepass key_admin"
     ports:
       - "6379:6379"
       - "8001:8001"
@@ -37,8 +35,10 @@ services:
       timeout: 10s
       retries: 3
     volumes:
-      - redis_data:/data
+      - valkey_data:/data
+      - ./valkey.conf:/usr/local/etc/redis/redis.conf
+    command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
 
 volumes:
-  redis_data:
+  valkey_data:
     driver: local
