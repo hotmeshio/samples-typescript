@@ -1,5 +1,5 @@
 services:
-  hotmesh-sandbox:
+  sandbox:
     build: .
     develop:
       watch:
@@ -12,7 +12,7 @@ services:
         path: package.json
     ports:
       - "3000:3000"
-    container_name: hotmesh-sandbox
+    container_name: sandbox
     environment:
       - REDIS_HOST=redis
       - REDIS_PORT=6379
