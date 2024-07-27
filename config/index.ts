@@ -4,7 +4,7 @@ console.log('CLUSTER MODE ENABLED', process.env.HMSH_IS_CLUSTER === 'true');
 const baseConfig = {
   CORS_ORIGIN: process.env.CORS_ORIGIN || 'http://localhost:3000',
 
-  USE_REDIS: process.env.USE_REDIS === 'true',
+  USE_REDIS: process.env.USE_REDIS !== 'false', // default to true
   USE_DRAGONFLY: process.env.USE_DRAGONFLY === 'true',
   USE_VALKEY: process.env.USE_VALKEY === 'true',
 
