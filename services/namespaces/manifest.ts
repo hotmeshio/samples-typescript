@@ -21,8 +21,8 @@ import { EntityInstanceTypes, Namespaces, Profiles } from '../../types/manifest'
  * the backend services we wish to test. Use the .env file for
  * setting locally.
  */
-const USE_DRAGONFLY = process.env.USE_DRAGONFLY !== 'false'; //default to true
-const USE_REDIS = process.env.USE_REDIS === 'true';
+const USE_REDIS = process.env.USE_REDIS !== 'false'; //default to true
+const USE_DRAGONFLY = process.env.USE_DRAGONFLY === 'true';
 const USE_VALKEY = process.env.USE_VALKEY === 'true';
 
 /**
