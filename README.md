@@ -46,11 +46,11 @@ If you'd like to know more about *HotMesh* in general, refer to the section on D
 - `npm run docker:reset-redis` - Reset Redis [reset database]
 - `npm run docker:logs:redis` - View Redis logs
 
-HotMesh works with any Redis-like backend, including ValKey and Dragonfly. A Docker Compose file has been included for each. If you wish to run the demos using a specific backend, use one of the following variants:
+HotMesh works with any Redis-like backend. ValKey and DragonflyDB are loaded alongside the Redis instance. External Port mappings are as follows.
 
-- `npm run docker:reset-redis` - Reset Redis [reset and use Redis]
-- `npm run docker:reset-redis:valkey` - Reset ValKey [reset and use ValKey]
-- `npm run docker:reset-redis:dragonfly` - Reset Dragonfly [reset and use Dragonfly]
+- `6399` - Redis
+- `6398` - ValKey
+- `6397` - DragonflyDB
 
 >All demos will work with all DB variants except for the MeshData demo which uses the Redis `FT.SEARCH` module (unsupported in ValKey). The demo will still successfully execute workflows, but it will not be searchable using `FT.SEARCH` commands. 
 

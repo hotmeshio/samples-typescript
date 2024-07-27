@@ -4,30 +4,23 @@ console.log('initializing hotmesh demo ...\n');
 
 import 'dotenv/config';
 import { HotMesh } from '@hotmeshio/hotmesh';
-import * as Redis from 'redis';
 import { setupTelemetry } from '../../../telemetry/index';
+import { getRedisConfig } from '../config';
 
 setupTelemetry();
-const redisConfig = {
-  class: Redis,
-  options: {
-    url: 'redis://:key_admin@redis:6379'
-  }
-};
+
 
 (async () => {
 
   //init an engine and worker
   const hotMesh = await HotMesh.init({
     appId: 'hotmesh',
-    engine: {
-      redis: redisConfig,
-    },
+    engine: { redis: getRedisConfig() },
 
     workers: [
       { 
         topic: 'work.do',
-        redis: redisConfig,
+        redis: getRedisConfig(),
         callback: async function (data) {
           return {
             metadata: { ...data.metadata },
@@ -38,7 +31,7 @@ const redisConfig = {
     ]
   });
 
-  //3) compile and deploy the app to Redis (the distributed executable)
+  //3) compile and deploy the app (distributed executable) to Redis 
   await hotMesh.deploy(`app:
   id: hotmesh
   version: '1'

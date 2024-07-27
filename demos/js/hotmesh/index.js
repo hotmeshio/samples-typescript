@@ -3,13 +3,7 @@
 console.log('initializing hotmesh demo ...\n');
 
 const { HotMesh } = require('@hotmeshio/hotmesh');
-const Redis = require('redis');
-const redisConfig = {
-  class: Redis,
-  options: {
-    url: 'redis://:key_admin@redis:6379'
-  }
-};
+const { getRedisConfig } = require('../config');
 
 (async () => {
 
@@ -18,13 +12,13 @@ const redisConfig = {
     appId: 'hotmesh',
     logLevel: process.env.HMSH_LOG_LEVEL || 'debug',
     engine: {
-      redis: redisConfig,
+      redis: getRedisConfig(),
     },
 
     workers: [
       { 
         topic: 'work.do',
-        redis: redisConfig,
+        redis: getRedisConfig(),
         callback: async function (data) {
           return {
             metadata: { ...data.metadata },

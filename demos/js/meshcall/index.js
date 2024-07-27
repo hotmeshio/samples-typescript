@@ -3,7 +3,7 @@
 console.log('\n* initializing meshcall demo ...\n');
 
 const { MeshCall } = require('@hotmeshio/hotmesh');
-const Redis = require('redis');
+const { getRedisConfig } = require('../config');
 
 (async () => {
   try {
@@ -12,10 +12,7 @@ const Redis = require('redis');
     await MeshCall.connect({
       namespace: 'meshcall',
       topic: 'my.function',
-      redis: {
-        class: Redis,
-        options: { url: 'redis://:key_admin@redis:6379' },
-      },
+      redis: getRedisConfig(),
       callback: async function(userID) {
         //do stuff...
         console.log('callback was called >', userID);
@@ -29,10 +26,7 @@ const Redis = require('redis');
       namespace: 'meshcall',
       topic: 'my.function',
       args: ['CoolMesh'],
-      redis: {
-        class: Redis,
-        options: { url: 'redis://:key_admin@redis:6379' },
-      },
+      redis: getRedisConfig(),
     });
     console.log('\n* worker response >', response);
 
@@ -42,10 +36,7 @@ const Redis = require('redis');
       namespace: 'meshcall',
       topic: 'my.function',
       id: 'mycached123',
-      redis: {
-        class: Redis,
-        options: { url: 'redis://:key_admin@redis:6379' },
-      },
+      redis: getRedisConfig(),
       options: { id: 'mycached123' }, //this format also works
     });
 
@@ -58,10 +49,7 @@ const Redis = require('redis');
         namespace: 'meshcall',
         topic: 'my.function',
         args: ['CachedMesh'],
-        redis: {
-          class: Redis,
-          options: { url: 'redis://:key_admin@redis:6379' },
-        },
+        redis: getRedisConfig(),
         options: { id: 'mycached123', ttl: '1 day' },
       });
       console.log('* cached response for 1 day>', cached);
