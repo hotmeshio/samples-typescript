@@ -9,11 +9,11 @@ import { RoutingOrderSchema } from '../../../schemas';
  */
 class Order extends BaseEntity {
 
-  protected getTaskQueue(): string {
+  getTaskQueue(): string {
     return 'v1';
   }
 
-  protected getEntity(): string {
+  getEntity(): string {
     return 'order';
   }
 

@@ -1,10 +1,14 @@
-//USAGE            `npm run demo:js:meshflow`        ///////
+//USAGE            `DEMO_DB=valkey npm run demo:js:meshflow`
+//                 `DEMO_DB=dragonfly npm run demo:js:meshflow`
+//                 `npm run demo:js:meshflow` //default is redis
 
 console.log('initializing meshflow demo ...\n');
 
 const { MeshFlow, HotMesh } = require('@hotmeshio/hotmesh');
 const { getRedisConfig } = require('../config');
 const workflows = require('./workflows');
+const { setupTelemetry } = require('../tracer');
+setupTelemetry();
 
 (async () => {
   try {
@@ -36,7 +40,7 @@ const workflows = require('./workflows');
       namespace: 'meshflow', //the app name in Redis
       taskQueue: 'default',
       workflowName: 'example',
-      workflowId: HotMesh.guid(),
+      workflowId: `default-${HotMesh.guid()}`,
       args: ['HotMesh', 'es'],
       expire: 3_600,
       search: {

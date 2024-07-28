@@ -2,7 +2,7 @@
 	"info": {
 		"_postman_id": "41252fde-c4d9-4ae8-8bd9-62cf6ac98d82",
 		"name": "MeshData RPC",
-		"description": "Surfaces the Pluck module SDK as a set of RPC-oriented APIs.",
+		"description": "Surfaces the MeshData module SDK as a set of RPC-oriented APIs.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
 		"_exporter_id": "11451556"
 	},
@@ -44,7 +44,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"data\": [\n        \"user\",\n        {\n          \"return\": [\"id\", \"first\", \"email\"],\n          \"query\": [\n            { \"field\": \"email\", \"is\": \"=\", \"value\": \"jen\\\\.doe\\\\@pluck\\\\.com\" }\n            ],\n          \"limit\": { \"start\": 0, \"size\": 100 },\n          \"options\": { \"namespace\": \"s\" }\n        }\n    ],\n    \"metadata\": {\n        \"database\": \"redis\",\n        \"namespace\": \"s\",\n        \"entity\": \"user\"\n    }\n}",
+					"raw": "{\n    \"data\": [\n        \"user\",\n        {\n          \"return\": [\"id\", \"first\", \"email\"],\n          \"query\": [\n            { \"field\": \"email\", \"is\": \"=\", \"value\": \"jen\\\\.doe\\\\@hotmesh\\\\.com\" }\n            ],\n          \"limit\": { \"start\": 0, \"size\": 100 },\n          \"options\": { \"namespace\": \"s\" }\n        }\n    ],\n    \"metadata\": {\n        \"database\": \"redis\",\n        \"namespace\": \"s\",\n        \"entity\": \"user\"\n    }\n}",
 					"options": {
 						"raw": {
 							"language": "json"

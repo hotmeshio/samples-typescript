@@ -19,7 +19,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"id\": \"jen.doe\",\n    \"first\": \"Jen\",\n    \"last\": \"Doe\",\n    \"email\": \"jen.doe@pluck.com\",\n    \"plan\": \"starter\",\n    \"cycle\": \"monthly\"\n}",
+					"raw": "{\n    \"id\": \"jen.doe\",\n    \"first\": \"Jen\",\n    \"last\": \"Doe\",\n    \"email\": \"jen.doe@hotmesh.com\",\n    \"plan\": \"starter\",\n    \"cycle\": \"monthly\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -27,7 +27,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:3010/api/v1/users?database=redis&namespace=s",
+					"raw": "http://localhost:3010/api/v1/users?database=redis&namespace=sandbox  ",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -45,7 +45,7 @@
 						},
 						{
 							"key": "namespace",
-							"value": "s"
+							"value": "sandbox"
 						}
 					]
 				}
@@ -76,7 +76,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:3010/api/v1/users/jen.doe?database=redis&namespace=s",
+					"raw": "http://localhost:3010/api/v1/users/jen.doe?database=redis&namespace=sandbox  ",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -95,7 +95,7 @@
 						},
 						{
 							"key": "namespace",
-							"value": "s"
+							"value": "sandbox"
 						}
 					]
 				}
@@ -108,7 +108,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:3010/api/v1/users/jen.doe?database=redis&namespace=s",
+					"raw": "http://localhost:3010/api/v1/users/jen.doe?database=redis&namespace=sandbox  ",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -127,7 +127,7 @@
 						},
 						{
 							"key": "namespace",
-							"value": "s"
+							"value": "sandbox"
 						}
 					]
 				}
@@ -155,7 +155,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:3010/api/v1/users/jen.doe?database=redis&namespace=s",
+					"raw": "http://localhost:3010/api/v1/users/jen.doe?database=redis&namespace=sandbox  ",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -174,7 +174,7 @@
 						},
 						{
 							"key": "namespace",
-							"value": "s"
+							"value": "sandbox"
 						}
 					]
 				}
@@ -202,7 +202,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:3010/api/v1/users/jen.doe/plans?database=redis&namespace=s",
+					"raw": "http://localhost:3010/api/v1/users/jen.doe/plans?database=redis&namespace=sandbox  ",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -222,7 +222,7 @@
 						},
 						{
 							"key": "namespace",
-							"value": "s"
+							"value": "sandbox"
 						}
 					]
 				}
@@ -235,7 +235,7 @@
 				"method": "DELETE",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:3010/api/v1/users/jen.doe?database=redis&namespace=s",
+					"raw": "http://localhost:3010/api/v1/users/jen.doe?database=redis&namespace=sandbox  ",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -254,7 +254,7 @@
 						},
 						{
 							"key": "namespace",
-							"value": "s"
+							"value": "sandbox"
 						}
 					]
 				}

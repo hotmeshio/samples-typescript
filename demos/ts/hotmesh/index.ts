@@ -1,14 +1,14 @@
-//USAGE            `npm run demo:ts:hotmesh howdy`        ///////
+//USAGE            `DEMO_DB=dragonfly npm run demo:ts:hotmesh howdy`
+//                 `DEMO_DB=valkey npm run demo:ts:hotmesh hi`
+//                 `npm run demo:ts:hotmesh` //default is hello
 
 console.log('initializing hotmesh demo ...\n');
 
 import 'dotenv/config';
 import { HotMesh } from '@hotmeshio/hotmesh';
-import { setupTelemetry } from '../../../telemetry/index';
+import { setupTelemetry } from '../../../telemetry';
 import { getRedisConfig } from '../config';
-
 setupTelemetry();
-
 
 (async () => {
 
@@ -37,6 +37,8 @@ setupTelemetry();
   version: '1'
   graphs:
     - subscribes: hotmesh.test
+
+      expire: 3600
 
       input:
         schema:

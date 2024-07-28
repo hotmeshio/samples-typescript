@@ -1,9 +1,13 @@
-//USAGE            `npm run demo:js:meshcall cat dog mouse`        ///////
+//USAGE            `DEMO_DB=valkey npm run demo:js:meshcall`
+//                 `DEMO_DB=dragonfly npm run demo:js:meshcall`
+//                 `npm run demo:js:meshcall` //default is redis
 
 console.log('\n* initializing meshcall demo ...\n');
 
 const { MeshCall } = require('@hotmeshio/hotmesh');
 const { getRedisConfig } = require('../config');
+const { setupTelemetry } = require('../tracer');
+setupTelemetry();
 
 (async () => {
   try {
@@ -50,6 +54,7 @@ const { getRedisConfig } = require('../config');
         topic: 'my.function',
         args: ['CachedMesh'],
         redis: getRedisConfig(),
+        //use `default` as the prefix, so the job is easy to locate (HSCAN default-*)
         options: { id: 'mycached123', ttl: '1 day' },
       });
       console.log('* cached response for 1 day>', cached);

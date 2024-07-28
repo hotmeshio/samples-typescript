@@ -17,7 +17,7 @@ const doSendBill = async (...args: any[]) => {
  */
 class Bill extends BaseEntity {
 
-  protected getTaskQueue(): string {
+  getTaskQueue(): string {
     return 'v1';
   }
 
@@ -25,7 +25,7 @@ class Bill extends BaseEntity {
     return 'bill';
   }
 
-  protected getEntity(): string {
+  getEntity(): string {
     return Bill.getEntity();
   }
 

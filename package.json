@@ -1,6 +1,6 @@
 {
   "name": "samples-typescript",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "HotMesh LifeCycle Sandbox",
   "scripts": {
     "clean": "rimraf ./build",
@@ -23,7 +23,6 @@
     "docker:demo:ts:meshflow": "docker compose exec hotmesh-dashboard npm run demo:ts:meshflow",
     "docker:demo:ts:meshcall": "docker compose exec hotmesh-dashboard npm run demo:ts:meshcall",
     "docker:demo:ts:meshdata": "docker compose exec hotmesh-dashboard npm run demo:ts:meshdata",
-
     "open:redis": "open http://localhost:8001",
     "open:dashboard": "open http://localhost:3010",
     "server": "HMSH_LOGLEVEL='info' HMSH_BLOCK_TIME_MS=180000 ts-node-dev --exit-child --respawn --transpile-only --ignore-watch node_modules --watch .env -- web/server.ts",
@@ -45,13 +44,14 @@
     "Temporalio",
     "Durable Workflow",
     "Distributed Orchestration",
-    "MeshData"
+    "MeshData",
+    "Middleware"
   ],
   "author": "luke.birdeau@gmail.com",
   "license": "Apache-2.0",
   "dependencies": {
     "@honeycombio/opentelemetry-node": "^0.7.2",
-    "@hotmeshio/hotmesh": "^0.2.0",
+    "@hotmeshio/hotmesh": "^0.2.1",
     "@opentelemetry/auto-instrumentations-node": "^0.47.1",
     "@opentelemetry/sdk-node": "^0.52.1",
     "cors": "^2.8.5",

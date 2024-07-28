@@ -24,7 +24,7 @@ class User extends BaseEntity {
     return 'user';
   }
 
-  protected getEntity(): string {
+  getEntity(): string {
     return User.getEntity();
   }
 

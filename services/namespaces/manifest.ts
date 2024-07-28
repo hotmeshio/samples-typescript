@@ -5,6 +5,7 @@ import { Order as BillingOrder } from './billing/order';
 import { Order as RoutingOrder } from './routing/order';
 import { Order as SandboxOrder } from './sandbox/order';
 import { Inventory } from './inventory';
+import { DefaultEntity } from './default';
 
 import { schema as BillingOrderSchema } from '../schemas/billing/order';
 import { schema as SandboxOrderSchema } from '../schemas/sandbox/order';
@@ -118,7 +119,7 @@ export const entities = {
     name: 'default',
     label: 'Default',
     schema: InventorySchema,
-    class: Inventory,
+    class: DefaultEntity,
   },
 };
 
@@ -158,26 +159,10 @@ export const namespaces: Namespaces = {
       entities['inventory'],
     ],
   },
-  hotmesh: {
-    name: 'HotMesh Demo',
-    type: 'hotmesh',
-    label: 'HotMesh Demo',
-    entities: [
-      entities['default'],
-    ],
-  },
   meshdata: {
     name: 'MeshData Demo',
     type: 'meshdata',
     label: 'MeshData Demo',
-    entities: [
-      entities['default'],
-    ],
-  },
-  meshcall: {
-    name: 'MeshCall Demo',
-    type: 'meshcall',
-    label: 'MeshCall Demo',
     entities: [
       entities['default'],
     ],
@@ -199,43 +184,37 @@ export const profiles: Profiles = {
   redis: {
     db: dbs.redis,
     namespaces: {
-      [process.env.SANDBOX_NAMESPACE ?? 's']: namespaces.sandbox,
-      [process.env.ROUTING_NAMESPACE ?? 'r']: namespaces.routing,
-      [process.env.BILLING_NAMESPACE ?? 'b']: namespaces.billing,
-      [process.env.INVENTORY_NAMESPACE ?? 'i']: namespaces.inventory,
-      meshcall: namespaces.meshcall,
+      sandbox: namespaces.sandbox,
+      routing: namespaces.routing,
+      billing: namespaces.billing,
+      inventory: namespaces.inventory,
       meshdata: namespaces.meshdata,
       meshflow: namespaces.meshflow,
-      hotmesh: namespaces.hotmesh,
     }
   },
   valkey: {
     db: dbs.valkey,
     namespaces: {
-      [process.env.SANDBOX_NAMESPACE ?? 's']: namespaces.sandbox,
-      [process.env.ROUTING_NAMESPACE ?? 'r']: namespaces.routing,
-      [process.env.BILLING_NAMESPACE ?? 'b']: namespaces.billing,
-      [process.env.INVENTORY_NAMESPACE ?? 'i']: namespaces.inventory,
-      meshcall: namespaces.meshcall,
+      sandbox: namespaces.sandbox,
+      routing: namespaces.routing,
+      billing: namespaces.billing,
+      inventory: namespaces.inventory,
       meshdata: namespaces.meshdata,
       meshflow: namespaces.meshflow,
-      hotmesh: namespaces.hotmesh,
     }
   },
   dragonfly: {
     db: dbs['dragonfly'],
     namespaces: {
-      [process.env.SANDBOX_NAMESPACE ?? 'sandbox']: namespaces.sandbox,
-      [process.env.ROUTING_NAMESPACE ?? 'routing']: namespaces.routing,
-      [process.env.BILLING_NAMESPACE ?? 'billing']: namespaces.billing,
-      [process.env.INVENTORY_NAMESPACE ?? 'inventory']: namespaces.inventory,
-      meshcall: namespaces.meshcall,
+      sandbox: namespaces.sandbox,
+      routing: namespaces.routing,
+      billing: namespaces.billing,
+      inventory: namespaces.inventory,
       meshdata: namespaces.meshdata,
       meshflow: namespaces.meshflow,
-      hotmesh: namespaces.hotmesh,
     }
   },
-};;
+};
 
 /**
  * Initialize each profile (p) with a db that is properly configured,

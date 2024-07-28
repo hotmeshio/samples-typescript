@@ -27,7 +27,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:3010/api/v1/tests?database=redis&namespace=s",
+					"raw": "http://localhost:3010/api/v1/tests?database=redis&namespace=sandbox",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -45,7 +45,7 @@
 						},
 						{
 							"key": "namespace",
-							"value": "s"
+							"value": "sandbox"
 						}
 					]
 				}
@@ -73,7 +73,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:3010/api/v1/tests?database=redis&namespace=s",
+					"raw": "http://localhost:3010/api/v1/tests?database=redis&namespace=sandbox",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -91,7 +91,7 @@
 						},
 						{
 							"key": "namespace",
-							"value": "s"
+							"value": "sandbox"
 						}
 					]
 				}

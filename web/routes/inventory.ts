@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { Inventory } from './../../services/namespaces/inventory';
+import { Inventory } from '../../services/namespaces/inventory';
 import { findEntity } from '../../services/namespaces/manifest';
 
 const router = Router();

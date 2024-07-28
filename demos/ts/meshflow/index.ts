@@ -1,4 +1,6 @@
-//USAGE            `npm run demo:ts:meshflow`        ///////
+//USAGE            `DEMO_DB=valkey npm run demo:ts:meshflow`
+//                 `DEMO_DB=dragonfly npm run demo:ts:meshflow`
+//                 `npm run demo:ts:meshflow` //default is redis
 
 console.log('initializing meshflow demo ...\n');
 
@@ -6,9 +8,7 @@ import 'dotenv/config';
 import { MeshFlow, HotMesh } from '@hotmeshio/hotmesh';
 import { getRedisConfig } from '../config';
 import * as workflows from './workflows';
-
-import { setupTelemetry } from '../../../telemetry/index';
-
+import { setupTelemetry } from '../../../telemetry';
 setupTelemetry();
 
 (async () => {
@@ -41,7 +41,7 @@ setupTelemetry();
       namespace: 'meshflow', //the app name in Redis
       taskQueue: 'default',
       workflowName: 'example',
-      workflowId: HotMesh.guid(),
+      workflowId: `default-${HotMesh.guid()}`,
       args: ['HotMesh', 'es'],
       expire: 3_600,
       search: {

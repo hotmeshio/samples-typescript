@@ -6,11 +6,11 @@ import { InventorySchema } from '../../schemas';
 
 class Inventory extends BaseEntity {
 
-  protected getTaskQueue(): string {
+  getTaskQueue(): string {
     return 'v1';
   }
 
-  protected getEntity(): string {
+  getEntity(): string {
     return 'inventory';
   }
 
@@ -26,6 +26,8 @@ class Inventory extends BaseEntity {
    * Caches a single inventory item
    */
   async add(inventory: Types.StringAnyType) {
+    const invt = await this.meshData.get(this.getEntity(), inventory.id, { fields: ['id'], namespace: this.getNamespace() });
+
     const data = this.safeData({
       account_id: inventory.account_id,
       auto_reorder: inventory.auto_reorder,
@@ -48,7 +50,6 @@ class Inventory extends BaseEntity {
       status: inventory.status,
     });
 
-    const invt = await this.meshData.get(this.getEntity(), inventory.id, { fields: ['id'], namespace: this.getNamespace() });
 
     if (!invt?.id) {
       await this.meshData.exec({

@@ -2,9 +2,8 @@
  * The js demo apps can't refer to the db list in manifest.ts,
  * so this provides config in a format usable for the
  * javascript test environment. In this case, always
- * load all db refs, so they're available for the demo.
+ * load all database variants, so they're available for the demo.
  */
-
 const USE_DRAGONFLY = true;
 const USE_REDIS = true;
 const USE_VALKEY = true;

@@ -1,34 +1,33 @@
+import { StringAnyType } from '@hotmeshio/hotmesh/build/types';
 import { BaseEntity } from './base';
 import { Types } from '@hotmeshio/hotmesh';
+import { schema as DefaultSchema } from '../schemas/default';
 
+/**
+ * catch-all entity type that allows for generic hotmesh workflows
+ * to be surfaced in the dashboard (as the dashboard is entity-focused)
+ */
 class DefaultEntity extends BaseEntity {
 
-    protected getTaskQueue(): string {
-        return 'v1';
-    }
+  async add(..._: any[]): Promise<StringAnyType> {
+    return {  };
+  }
 
-    protected getEntity(): string {
-        return 'default';
-    }
+  getTaskQueue(): string {
+    return 'v1';
+  }
 
-    getSearchOptions(): Types.WorkflowSearchOptions {
-        return {
-            index: `${this.getNamespace()}-${this.getEntity()}`,
-            prefix: [this.getEntity()],
-            schema: {
-                $entity: {
-                    type: 'TAG',
-                    indexed: false,
-                    primitive: 'string',
-                    required: true,
-                },
-                id: {
-                    type: 'TAG',
-                    sortable: false,
-                },
-            },
-        };
-    }
+  getEntity(): string {
+    return 'default';
+  }
+
+  getSearchOptions(): Types.WorkflowSearchOptions {
+    return {
+      index: `${this.getNamespace()}-${this.getEntity()}`,
+      prefix: [this.getEntity()],
+      schema: DefaultSchema,
+    };
+  }
 }
 
 export { DefaultEntity };

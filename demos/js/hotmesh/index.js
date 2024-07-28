@@ -1,9 +1,13 @@
-//USAGE            `npm run demo:js:hotmesh howdy`        ///////
+//USAGE            `DEMO_DB=dragonfly npm run demo:js:hotmesh howdy`
+//                 `DEMO_DB=valkey npm run demo:js:hotmesh hi`
+//                 `npm run demo:js:hotmesh` //default is hello
 
 console.log('initializing hotmesh demo ...\n');
 
 const { HotMesh } = require('@hotmeshio/hotmesh');
 const { getRedisConfig } = require('../config');
+const { setupTelemetry } = require('../tracer');
+setupTelemetry();
 
 (async () => {
 
@@ -35,6 +39,8 @@ const { getRedisConfig } = require('../config');
   version: '1'
   graphs:
     - subscribes: hotmesh.test
+
+      expire: 3600
 
       input:
         schema:

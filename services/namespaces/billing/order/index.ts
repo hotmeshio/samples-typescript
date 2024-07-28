@@ -4,11 +4,11 @@ import { Types } from '@hotmeshio/hotmesh';
 
 class Order extends BaseEntity {
 
-  protected getTaskQueue(): string {
+  getTaskQueue(): string {
     return 'v2';
   }
 
-  protected getEntity(): string {
+  getEntity(): string {
     return 'order';
   }
 

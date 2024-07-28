@@ -7,6 +7,7 @@ import { Order as BillingOrder } from '../services/namespaces/billing/order';
 import { Order as RoutingOrder } from '../services/namespaces/routing/order';
 import { Order as SandboxOrder } from '../services/namespaces/sandbox/order';
 import { Inventory } from '../services/namespaces/inventory';
+import { DefaultEntity } from '../services/namespaces/default';
 
 export type DBConfig = {
   REDIS_DATABASE: number,
@@ -24,7 +25,7 @@ export type DB = {
   config: DBConfig,
 };
 
-export type EntityClassTypes = typeof BillingOrder | typeof RoutingOrder | typeof SandboxOrder | typeof Inventory | typeof User | typeof Bill | typeof Test;
+export type EntityClassTypes = typeof BillingOrder | typeof RoutingOrder | typeof SandboxOrder | typeof Inventory | typeof User | typeof Bill | typeof Test | typeof DefaultEntity;
 export type EntityInstanceTypes = BillingOrder | RoutingOrder | SandboxOrder | Inventory | User | Bill | Test;
 
 export type Entity = {

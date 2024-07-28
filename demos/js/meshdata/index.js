@@ -1,4 +1,6 @@
-//USAGE            `npm run demo:js:meshdata cat dog mouse`        ///////
+//USAGE            `DEMO_DB=valkey FTS=false npm run demo:js:meshdata bronze silver gold`
+//                 `DEMO_DB=dragonfly npm run demo:js:meshdata bronze silver gold`
+//                 `npm run demo:js:meshdata bronze silver gold` //default is redis
 
 console.log('\n* initializing meshdata demo ...\n');
 
@@ -10,7 +12,7 @@ const { getRedisConfig } = require('../config');
   try {
     let userIDs = process.argv.slice(2);
     if (!userIDs.length) {
-      userIDs = ['cat', 'dog', 'mouse'];
+      userIDs = ['bronze', 'silver', 'gold'];
     }
 
     //1) Define a search schema
@@ -56,12 +58,12 @@ const { getRedisConfig } = require('../config');
         entity: 'default',
         args: [userID],
         options: {
-          ttl: 'infinity', //the function call is now a persistent, 'live' record
+          ttl: '45 minutes',
           id: userID,
           search: {
             data: { id: userID, plan: 'pro' }
           },
-          namespace: 'meshdata', //redis app name (default is 'meshflow')
+          namespace: 'meshdata', //redis app name (default is 'durable')
         },
       });
 
@@ -78,17 +80,22 @@ const { getRedisConfig } = require('../config');
       console.log(`${userID === userIDs[0] ? '\n' : ''}* UserID: ${userID}, function response =>`, response, 'function state =>', data);
     }
 
-    //6) Create a search index
-    console.log('\n\n* creating search index ...');
-    await meshData.createSearchIndex('default', { namespace: 'meshdata' }, schema);
+    //when testing valkey, elasticache, etc skip search to avoid errors in testing
+    if (process.env.FTS === 'false') {
+      console.log('\n* Full Text Search Unsupported.skipping search index creation and search\n');
+    } else {
+      //6) Create a search index
+      console.log('\n\n* creating search index ...');
+      await meshData.createSearchIndex('default', { namespace: 'meshdata' }, schema);
 
-    //7) Full Text Search for records
-    const results = await meshData.findWhere('default', {
-      query: [{ field: 'id', is: '=', value: userIDs[userIDs.length - 1] }],
-      limit: { start: 0, size: 100 },
-      return: ['plan', 'id', 'active']
-    });
-    console.log(`\n\n* matching message (${userIDs[userIDs.length - 1]}) ...\n`, results, '\n');
+      //7) Full Text Search for records
+      const results = await meshData.findWhere('default', {
+        query: [{ field: 'id', is: '=', value: userIDs[userIDs.length - 1] }],
+        limit: { start: 0, size: 100 },
+        return: ['plan', 'id', 'active']
+      });
+      console.log(`\n\n* matching message (${userIDs[userIDs.length - 1]}) ...\n`, results, '\n');
+    }
 
     //8) Shutdown MeshData
     await MeshData.shutdown();

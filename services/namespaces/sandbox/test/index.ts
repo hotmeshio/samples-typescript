@@ -23,11 +23,11 @@ const proxiedActivities = MeshData.proxyActivities<typeof activities>({
  */
 class Test extends BaseEntity {
 
-  protected getTaskQueue(): string {
+  getTaskQueue(): string {
     return 'v1';
   }
 
-  protected getEntity(): string {
+  getEntity(): string {
     return 'test';
   }
 
@@ -112,6 +112,7 @@ class Test extends BaseEntity {
         ttl: '1 hour',
         namespace: this.getNamespace(),
         taskQueue: 'v1',
+        signalIn: false,
       },
     });
 
@@ -198,6 +199,7 @@ class Test extends BaseEntity {
             taskQueue: 'v1',
             //use 'workflowName' (not 'entity') to avoid indexing
             workflowName: 'test',
+            signalIn: false,
           }));
         }
         await Promise.all(childWorkflows);

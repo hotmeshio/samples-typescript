@@ -30,7 +30,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:3010/api/v1/bills?database=redis&namespace=s",
+					"raw": "http://localhost:3010/api/v1/bills?database=redis&namespace=sandbox",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -48,7 +48,7 @@
 						},
 						{
 							"key": "namespace",
-							"value": "s"
+							"value": "sandbox"
 						}
 					]
 				}

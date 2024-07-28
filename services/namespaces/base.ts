@@ -276,6 +276,8 @@ abstract class BaseEntity {
     }
     return transformed;
   }
+
+  workflow = {}
 }
 
 export { BaseEntity };

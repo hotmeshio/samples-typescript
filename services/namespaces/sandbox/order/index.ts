@@ -14,7 +14,7 @@ class Order extends BaseEntity {
     return 'v1';
   }
 
-  protected getEntity(): string {
+  getEntity(): string {
     return 'order';
   }
 

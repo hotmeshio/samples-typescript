@@ -1,4 +1,6 @@
-//USAGE            `npm run demo:ts:meshcall cat dog mouse`        ///////
+//USAGE            `DEMO_DB=valkey npm run demo:ts:meshcall`
+//                 `DEMO_DB=dragonfly npm run demo:ts:meshcall`
+//                 `npm run demo:ts:meshcall` //default is redis
 
 console.log('\n* initializing meshcall demo ...\n');
 
@@ -6,8 +8,7 @@ console.log('\n* initializing meshcall demo ...\n');
 import 'dotenv/config';
 import { MeshCall } from '@hotmeshio/hotmesh';
 import { getRedisConfig } from '../config';
-import { setupTelemetry } from '../../../telemetry/index';
-
+import { setupTelemetry } from '../../../telemetry';
 setupTelemetry();
 
 (async () => {
@@ -55,6 +56,7 @@ setupTelemetry();
         topic: 'my.function',
         args: ['CachedMesh'],
         redis: getRedisConfig(),
+        //use `default` as the prefix, so the job is easy to locate (HSCAN default-*)
         options: { id: 'mycached123', ttl: '1 day' },
       });
       console.log('* cached response for 1 day>', cached);
