@@ -52,16 +52,21 @@ HotMesh works with any Redis-like backend. ValKey and DragonflyDB are loaded alo
 - `6398` - ValKey
 - `6397` - DragonflyDB
 
->All demos will work with all DB variants except for the MeshData demo which uses the Redis `FT.SEARCH` module (unsupported in ValKey). The demo will still successfully execute workflows, but it will not be searchable using `FT.SEARCH` commands. 
+>All demos will work with all DB variants except for the MeshData demo which uses the Redis `FT.SEARCH` module (unsupported in ValKey). The demo will still successfully execute workflows, but it will not be searchable using `FT.SEARCH` commands.
 
-### JavaScript
+### HotMesh Dashboard
+The Dashboard Web App is available at `http://localhost:3010`. It provides a visual representation of the network, including the number of engines, workers, and workflows. It also provides a real-time view of the network's health and performance, linking to the OpenTelemetry dashboard for more detailed information.
+
+An LLM is also included to simplify querying and analyzing workflow data for those deployments that include the Redis `FT.SEARCH` module.
+
+### JavaScript Lifecycle Demos
 Run from outside the Docker container.
 - `npm run docker:demo:js:hotmesh howdy` - Run the *HotMesh* lifecycle example (JavaScript)
 - `npm run docker:demo:js:meshcall` - Run the *MeshCall* lifecycle example (JavaScript)
 - `npm run docker:demo:js:meshflow` - Run the *MeshFlow* lifecycle example (JavaScript)
 - `npm run docker:demo:js:meshdata cat dog mouse` - Run the *MeshData* lifecycle example (JavaScript)
 
-### TypeScript
+### TypeScript Lifecycle Demos
 Run from outside the Docker container.
 - `npm run docker:demo:ts:hotmesh howdy` - Run the *HotMesh* lifecycle example (TypeScript)
 - `npm run docker:demo:ts:meshcall` - Run the *MeshCall* lifecycle example (TypeScript)
