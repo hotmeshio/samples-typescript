@@ -14,6 +14,7 @@ The repo also includes a *Dashboard/WebApp* which surfaces all engines, workers,
 2. [Videos](#videos)
    - [The Illusion of Control](#the-illusion-of-control)
    - [Create an Idempotent Cron](#create-an-idempotent-cron)
+   - [Transactional Workflow](#transactional-workflow)
 3. [MeshCall](#meshcall)
    - [Connect Everything](#connect-everything)
    - [Link the Cron Function](#link-the-cron-function)
@@ -92,6 +93,11 @@ Run from outside the Docker container.
 [Video (10m)](https://www.loom.com/share/3140e810313c4749bdb76ae87f6908dd?sid=4cda17b9-77b4-42ff-8ce2-e544512378cc)
 
 This video demonstrates how to use the MeshCall module to link a cron function to the mesh and run it at server startup. It includes a discussion of idempotency, interruptions, and OpenTelemetry tracing.
+
+### Transactional Workflow
+[Video (10m)](https://www.loom.com/share/54ffd5266baf4ac6b287578abfd1d821?sid=cba2708d-01b4-43c1-b317-c0efaebe9c22)
+
+This video demonstrates how to use the MeshFlow module to create durable, transactional workflows. Workflow visualizations are provided using the HotMesh Dashboard and the Honeycomb OpenTelemetry Dashboard. The video also includes a discussion of Temporal.io and some background on how MeshFlow emulates the Temporal application server using a swarm of lightweight message routers.
 
 ## MeshCall
 
