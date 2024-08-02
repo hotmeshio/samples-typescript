@@ -84,14 +84,14 @@ Run from outside the Docker container.
 ## Videos
 
 ### The Illusion of Control
+[Video (2m)](https://www.loom.com/share/211bd4b4038d42f0ba34374ef5b6f961?sid=4df13ba8-622f-4e42-880e-b47f8be238d4)
+
 *HotMesh* is a distributed modeling and orchestration system capable of encapsulating existing systems, such as Business Process Management (BPM) and Enterprise Application Integration (EAI). The central innovation is its ability to compile its models into Distributed Executables, replacing a traditional Application Server with a network of Decentralized Message Routers. This video introduces the concept along with a description of the mechanics of the approach.
 
-[![The Illusion of Control](https://www.loom.com/share/211bd4b4038d42f0ba34374ef5b6f961?sid=7b889a56-f60f-4ccc-84e7-8c2697e548a9)
-
 ### Create an Idempotent Cron
-This video demonstrates how to use the MeshCall module to link a cron function to the mesh and run it at server startup. It includes a discussion of idempotency, interruptions, and OpenTelemetry tracing.
+[Video (10m)](https://www.loom.com/share/3140e810313c4749bdb76ae87f6908dd?sid=4cda17b9-77b4-42ff-8ce2-e544512378cc)
 
-[![Create an Idempotent Cron](https://www.loom.com/share/3140e810313c4749bdb76ae87f6908dd?sid=f8f3cf4c-0874-4bac-9e70-bbd57632942c)
+This video demonstrates how to use the MeshCall module to link a cron function to the mesh and run it at server startup. It includes a discussion of idempotency, interruptions, and OpenTelemetry tracing.
 
 ## MeshCall
 
