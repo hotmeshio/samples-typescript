@@ -12,6 +12,7 @@ export const startMyCron = async (
   callback: (...args: any[]) => Promise<any> | null,
   args: any[] = [],
 ) => {
+
   //START the cron
   const success = await MeshCall.cron({
     namespace: 'meshcall',
@@ -22,7 +23,7 @@ export const startMyCron = async (
     options: { id, interval: '5 seconds', maxCycles: 10 },
   });
 
-  //Get the trace URL
+  //Log the telemetry trace URL
   console.log('new cron started >', success);
   const hotMesh = await MeshCall.getInstance('meshcall', getRedisConfig());
   const jobState = await hotMesh.getState('meshcall.cron', id);
