@@ -90,12 +90,12 @@ Run from outside the Docker container.
 *HotMesh* is a distributed modeling and orchestration system capable of encapsulating existing systems, such as Business Process Management (BPM) and Enterprise Application Integration (EAI). The central innovation is its ability to compile its models into Distributed Executables, replacing a traditional Application Server with a network of Decentralized Message Routers. This video introduces the concept along with a description of the mechanics of the approach.
 
 ### Create an Idempotent Cron
-[Video (10m)](https://www.loom.com/share/3140e810313c4749bdb76ae87f6908dd?sid=4cda17b9-77b4-42ff-8ce2-e544512378cc)
+[Video (9m)](https://www.loom.com/share/3140e810313c4749bdb76ae87f6908dd?sid=4cda17b9-77b4-42ff-8ce2-e544512378cc)
 
 This video demonstrates how to use the MeshCall module to link a cron function to the mesh and run it at server startup. It includes a discussion of idempotency, interruptions, and OpenTelemetry tracing.
 
 ### Transactional Workflow
-[Video (10m)](https://www.loom.com/share/54ffd5266baf4ac6b287578abfd1d821?sid=cba2708d-01b4-43c1-b317-c0efaebe9c22)
+[Video (9m)](https://www.loom.com/share/54ffd5266baf4ac6b287578abfd1d821?sid=cba2708d-01b4-43c1-b317-c0efaebe9c22)
 
 This video demonstrates how to use the MeshFlow module to create durable, transactional workflows. Workflow visualizations are provided using the HotMesh Dashboard and the Honeycomb OpenTelemetry Dashboard. The video also includes a discussion of Temporal.io and some background on how MeshFlow emulates the Temporal application server using a swarm of lightweight message routers.
 

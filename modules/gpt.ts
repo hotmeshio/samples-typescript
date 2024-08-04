@@ -1,3 +1,4 @@
+import { Types } from '@hotmeshio/hotmesh';
 import OpenAI from 'openai';
 
 // Initialization of the OpenAI client with the API key
@@ -8,6 +9,32 @@ const openai = new OpenAI({
 type ChatMessage = {
   role: 'user' | 'system' | 'assistant';
   content: string;
+}
+
+type IndexFormat = {
+  index: string;
+  aliases?: string[];
+  return?: number; // Assuming a default or provided via another property if necessary.
+  fields: Array<[string, string, 'sortable' | 'unsortable', string]>;
+};
+
+function convertToIndexFormat(schemaMap: Record<string, Types.WorkflowSearchSchema>): IndexFormat[] {
+  return Object.keys(schemaMap).map((index) => ({
+    index: index,
+    fields: Object.entries(schemaMap[index]).reduce((acc, [key, field]) => {
+      // If the field is not indexed, it's not shared, hence not added to the fields array.
+      if (field.indexed !== true) {
+        const fieldName = field.fieldName ? field.fieldName : `_${key}`;
+        const sortable = field.sortable ? 'sortable' : 'unsortable';
+        const example = field.examples?.join(', ') ?? '';
+
+        // noindex fields are included in the structure but marked somehow if needed (not shown here)
+        // Assume 'noindex' affects only the querying aspect, not the listing here
+        acc.push([fieldName, field.type, sortable, example]);
+      }
+      return acc;
+    }, [] as Array<[string, string, 'sortable' | 'unsortable', string]>)
+  }));
 }
 
 // Definition of indexes as constants outside the class
@@ -38,6 +65,7 @@ class GPTService {
     console.log(cleaned, JSON.stringify(cleaned).length);
     return cleaned;
   }
+
  /**
    * Generates example queries based on predefined indexes. This function creates
    * sample 'prose' and 'ft_query' pairs for each index to assist in forming
@@ -71,10 +99,11 @@ class GPTService {
    * @param indexes 
    * @returns 
    */
-  async ask(messages: ChatMessage[], indexes = INDEXES) {
+  async ask(messages: ChatMessage[], schemaMap: Record<string, Types.WorkflowSearchSchema>) {
+    const indexes = convertToIndexFormat(schemaMap);
     const now = Date.now();
     const examples = this.generateExamples(now);
-    //todo: interleave generic examples using deterministic logic to seed best-practice examples for user's indexes
+    //todo: interleave generic examples
     const _autoGenExampleSection = `### EXAMPLES ###\n${examples.map(example => `#Q#: '${example.prose}', #A#: ${JSON.stringify(example)}`).join('\n')}`;
     const response = await openai.chat.completions.create({
       model: 'gpt-4o',
