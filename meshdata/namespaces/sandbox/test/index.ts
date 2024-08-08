@@ -32,54 +32,50 @@ class Test extends BaseEntity {
 
   async connect(counts: { 'test': number, 'test.transitive': number } = { 'test': config.TEST_WORKER_COUNT, 'test.transitive': 1 }) {
     for (let i = 0; i < counts[this.getEntity()]; i++) {
-      await this.deployPointOfPresence('worker');
-      await this.deployPointOfPresence('engine');
+      await this.deployWorker();
+      //deploy an extra engine for each worker just for fun
+      // (demonstrates how to increase engine points of presence)
+      await this.deployEngine();
     }
   }
 
-  async deployPointOfPresence(type: 'worker' | 'engine' = 'engine') {
-    if (type === 'worker') {
-      await this.meshData.connect({
-        entity: this.getEntity(),
-        target: workflows.startTest,
-        options: {
-          namespace: this.getNamespace(),
-          taskQueue: 'v1',
-        },
-      });
-    } else {
-      console.log('Swarming 1 HotMesh engine...');
-      const con = await this.meshData.getConnection();
-      const hm = await HotMesh.init({
-        appId: this.getNamespace(),
-        engine: {
-          redis: {
-            class: con.class,
-            options: con.options,
-          }
-        }
-      });
-    }
-    return { status: 'success', type };
+  async deployEngine() {
+    await HotMesh.init({
+      appId: this.getNamespace(),
+      engine: {
+        //re-use the same Redis connection
+        redis: await this.meshData.getConnection(),
+      }
+    });
+    return { status: 'success', type: 'worker' };
   }
 
-  //********** STANDARD TEST METHODS (CREATE, FIND, ETC) ******************
+  async deployWorker() {
+    await this.meshData.connect({
+      entity: this.getEntity(),
+      target: workflows.startTest,
+      options: {
+        namespace: this.getNamespace(),
+        taskQueue: 'v1',
+      },
+    });
+    return { status: 'success', type: 'worker' };
+  }
 
   /**
-   * Start/Create a Test; don't wait; return the test id immediately
+   * Start a test (recursive) workflow
    */
   async start({ type, width = 1, depth = 1, memo = '-1', wait = true, database }: TestInput): Promise<{ id: string, expectedCount: number }> {
     const timestamp = Date.now();
     const id = `tst${timestamp}`;
 
     // max concurrent workflows (Promise length) is set at 25
-    // we can increase, but 25 is a good starting point for tests
     if (width > 25) {
       width = 25;
     }
 
     const expectedCount = testCount(width, depth, type);
-    if ((type === 'ok' && expectedCount > config.MAX_FLOWS_PER_TEST) || (type === 'batch' && expectedCount > 1_000_000)) {
+    if (expectedCount > config.MAX_FLOWS_PER_TEST) {
       throw new Error(`Final test count exceeds ${config.MAX_FLOWS_PER_TEST}(ok)/1,000,000(batch) workflow max. Reduce width and/or depth.`);
     }
 

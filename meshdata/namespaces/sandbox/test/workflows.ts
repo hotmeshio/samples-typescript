@@ -7,7 +7,7 @@ import { TestArgs } from "../../../../types/test";
  * and full-text search and collation (Promise.all)
  */
 export const startTest = async({ id, type, timestamp, width, depth, wait, memo = '', database }: TestArgs): Promise<number> => {
-  //set indexed, searchable data
+  //set a handful of searchable, indexed fields
   const search = await MeshData.workflow.search();
   await search.set(
     '$entity', 'test',
@@ -26,7 +26,7 @@ export const startTest = async({ id, type, timestamp, width, depth, wait, memo =
       childWorkflows.push(MeshData.workflow.execChild<number>({
         args: [{ id, type, timestamp, width, depth: depth - 1, wait, memo } as TestArgs],
         taskQueue: 'v1',
-        entity: 'test', //use `workflowName` to disable Full-Text Search
+        entity: 'test',
       }));
     }
     await Promise.all(childWorkflows);
