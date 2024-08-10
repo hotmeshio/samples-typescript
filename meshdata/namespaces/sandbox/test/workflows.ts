@@ -1,12 +1,18 @@
 import { MeshData } from "@hotmeshio/hotmesh";
 import { testCount } from "../../../../modules/utils";
 import { TestArgs } from "../../../../types/test";
+import * as activities from './activities';
 
 /**
- * Recursive workflow test runner. Tests execChild (composition)
- * and full-text search and collation (Promise.all)
+ * Proxy idempotent activities for retry and backoff.
  */
-export const startTest = async({ id, type, timestamp, width, depth, wait, memo = '', database }: TestArgs): Promise<number> => {
+const { doTestProxy } = MeshData.proxyActivities<typeof activities>({ activities });
+
+/**
+ * Recursive workflow test runner. Tests `execChild` (composition),
+ * full-text search,  `collation` (Promise.all), and `proxyActivities`.
+ */
+export const startTest = async({ id, type, timestamp, width, depth, wait, memo = '' }: TestArgs): Promise<number> => {
   //set a handful of searchable, indexed fields
   const search = await MeshData.workflow.search();
   await search.set(
@@ -27,9 +33,12 @@ export const startTest = async({ id, type, timestamp, width, depth, wait, memo =
         args: [{ id, type, timestamp, width, depth: depth - 1, wait, memo } as TestArgs],
         taskQueue: 'v1',
         entity: 'test',
+        signalIn: false,
       }));
     }
     await Promise.all(childWorkflows);
+  } else {
+    await doTestProxy(id);
   }
 
   //set the duration in ms and return

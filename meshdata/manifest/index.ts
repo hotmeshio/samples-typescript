@@ -13,7 +13,7 @@ import { schema as RoutingOrderSchema } from '../namespaces/routing/order/schema
 import { schema as SandboxUserSchema } from '../namespaces/sandbox/user/schema';
 import { schema as SandboxBillSchema } from '../namespaces/sandbox/bill/schema';
 import { schema as SandboxTestSchema } from '../namespaces/sandbox/test/schema';
-import { schema as InventorySchema } from '../namespaces/inventory/schema';
+import { schema as InventorySchema, schema } from '../namespaces/inventory/schema';
 import { EntityInstanceTypes, Namespaces, Profiles } from '../../types/manifest';
 import { Types } from '@hotmeshio/hotmesh';
 
@@ -319,6 +319,7 @@ export const toJSON = (p: Profiles = profiles): any => {
         result[key].namespaces[ns].entities.push({
           name: entity.name,
           label: entity.label,
+          schema: entity.schema,
         });
       }
     }

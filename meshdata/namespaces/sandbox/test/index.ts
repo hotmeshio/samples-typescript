@@ -33,12 +33,14 @@ class Test extends BaseEntity {
   async connect(counts: { 'test': number, 'test.transitive': number } = { 'test': config.TEST_WORKER_COUNT, 'test.transitive': 1 }) {
     for (let i = 0; i < counts[this.getEntity()]; i++) {
       await this.deployWorker();
-      //deploy an extra engine for each worker just for fun
-      // (demonstrates how to increase engine points of presence)
       await this.deployEngine();
     }
   }
 
+  /**
+   * Deploy a HotMesh engine (demonstrates how to increase
+   * engine points of presence)
+   */
   async deployEngine() {
     await HotMesh.init({
       appId: this.getNamespace(),
@@ -65,7 +67,7 @@ class Test extends BaseEntity {
   /**
    * Start a test (recursive) workflow
    */
-  async start({ type, width = 1, depth = 1, memo = '-1', wait = true, database }: TestInput): Promise<{ id: string, expectedCount: number }> {
+  async start({ type, width = 1, depth = 1, memo = '-1', wait = true }: TestInput): Promise<{ id: string, expectedCount: number }> {
     const timestamp = Date.now();
     const id = `tst${timestamp}`;
 
@@ -76,13 +78,13 @@ class Test extends BaseEntity {
 
     const expectedCount = testCount(width, depth, type);
     if (expectedCount > config.MAX_FLOWS_PER_TEST) {
-      throw new Error(`Final test count exceeds ${config.MAX_FLOWS_PER_TEST}(ok)/1,000,000(batch) workflow max. Reduce width and/or depth.`);
+      throw new Error(`Final test count exceeds ${config.MAX_FLOWS_PER_TEST}`);
     }
 
-    // Run the Test workflow (it's recursive, and calls itself `width^depth` times)
+    // Run the Test workflow
     this.meshData.exec<string>({
       entity: this.getEntity(),
-      args: [{ id, type, timestamp, width, depth, wait, memo, database }],
+      args: [{ id, type, timestamp, width, depth, wait, memo }],
       options: {
         id,
         ttl: '1 hour',

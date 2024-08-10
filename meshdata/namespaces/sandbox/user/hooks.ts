@@ -22,6 +22,7 @@ export const bill = async(planId: string, plan: string, cycle: string) => {
       entity: 'bill',
       args: [{ userId, planId, plan, cycle, timestamp }],
       taskQueue: 'v1',
+      signalIn: false,
     });
 
     //note: cycles are hourly/daily for demo purposes

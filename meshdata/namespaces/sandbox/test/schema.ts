@@ -54,6 +54,15 @@ export const schema: Types.WorkflowSearchSchema = {
     required: false,
     examples: ['1', '2', '3'] // milliseconds
   },
+  memo: {
+    type: 'TEXT',
+    sortable: false,
+    primitive: 'string',
+    required: false,
+    examples: ['Hello!'],
+    nostem: true,
+    noindex: true,
+  },
   randomId: {
     type: 'NUMERIC',
     primitive: 'string',
