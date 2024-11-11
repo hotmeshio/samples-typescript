@@ -45,7 +45,7 @@ class Test extends MeshOS {
       appId: this.getNamespace(),
       engine: {
         //re-use the same Redis connection
-        redis: await this.meshData.getConnection(),
+        connection: await this.meshData.getConnection(),
       }
     });
     return { status: 'success', type: 'worker' };

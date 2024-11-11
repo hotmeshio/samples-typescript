@@ -117,7 +117,7 @@ import * as Redis from 'redis';
 export const startMyCron = (id: string, interval = '1 day') => {
   MeshCall.cron({
     topic: 'my.cron.function',
-    redis: {
+    connection: {
       class: Redis,
       options: { url: 'redis://:key_admin@redis:6379' }
     },
@@ -442,7 +442,7 @@ const hotMesh = await HotMesh.init({
   appId: 'myfirstapp',
 
   engine: {
-    redis: {
+    connection: {
       class: Redis,
       options: { url: 'redis://:key_admin@redis:6379' }
     }
@@ -451,7 +451,7 @@ const hotMesh = await HotMesh.init({
   workers: [
     { 
       topic: 'work.do',
-      redis: {
+      connection: {
         class: Redis,
         options: { url: 'redis://:key_admin@redis:6379' }
       }

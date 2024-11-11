@@ -17,12 +17,12 @@ setupTelemetry();
   //init an engine and worker
   const hotMesh = await HotMesh.init({
     appId: 'hotmesh',
-    engine: { redis: getRedisConfig() },
+    engine: { connection: getRedisConfig() },
     logLevel: 'debug',
     workers: [
       { 
         topic: 'work.do',
-        redis: getRedisConfig(),
+        connection: getRedisConfig(),
         callback: async function (payload: StreamData) {
           return {
             metadata: { ...payload.metadata },

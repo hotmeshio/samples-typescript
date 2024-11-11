@@ -19,7 +19,7 @@ export const startMyCron = async (
     args,
     topic,
     callback,
-    redis: getRedisConfig(),
+    connection: getRedisConfig(),
     options: { id, interval: '5 seconds', maxCycles: 10 },
   });
 
@@ -38,7 +38,7 @@ export const stopMyCron = async (id: string, topic: string) => {
   const success = await MeshCall.interrupt( {
     namespace: 'meshcall',
     topic,
-    redis: getRedisConfig(),
+    connection: getRedisConfig(),
     options: { id },
   });
   console.log('cron was stopped!', success);

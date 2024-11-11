@@ -1,3 +1,4 @@
+import * as Redis from 'redis';
 import { MeshOS } from '@hotmeshio/hotmesh';
 
 // Import entity classes
@@ -23,40 +24,37 @@ const USE_DRAGONFLY = process.env.USE_DRAGONFLY === 'true';
 const USE_VALKEY = process.env.USE_VALKEY === 'true';
 
 export const databases = {
-  redis: {
+  redis: !USE_REDIS ? undefined: {
     name: 'Redis',
     label: 'redis/redis-stack7.2.0',
     search: true,
-    config: {
-      REDIS_DATABASE: 0,
-      REDIS_HOST: USE_REDIS && 'redis',
-      REDIS_PORT: 6379,
-      REDIS_PASSWORD: 'key_admin',
-      REDIS_USE_TLS: false,
+    connection: {
+      class: Redis,
+      options: {
+        url: 'redis://:key_admin@redis:6379'
+      }
     },
   },
-  valkey: {
+  valkey: !USE_VALKEY ? undefined: {
     name: 'ValKey',
     label: 'ValKey',
     search: false,
-    config: {
-      REDIS_DATABASE: 0,
-      REDIS_HOST: USE_VALKEY && 'valkey',
-      REDIS_PORT: 6379,
-      REDIS_PASSWORD: 'key_admin',
-      REDIS_USE_TLS: false,
+    connection: {
+      class: Redis,
+      options: {
+        url: 'redis://:key_admin@valkey:6379'
+      }
     },
   },
-  dragonfly: {
+  dragonfly: !USE_DRAGONFLY ? undefined: {
     name: 'DragonflyDB',
     label: 'DragonflyDB',
     search: true,
-    config: {
-      REDIS_DATABASE: 0,
-      REDIS_HOST: USE_DRAGONFLY && 'dragonflydb',
-      REDIS_PORT: 6379,
-      REDIS_PASSWORD: 'key_admin',
-      REDIS_USE_TLS: false,
+    connection: {
+      class: Redis,
+      options: {
+        url: 'redis://:key_admin@dragonflydb:6379'
+      }
     },
   },
 };

@@ -18,7 +18,7 @@ setupTelemetry();
     await MeshCall.connect({
       namespace: 'meshcall',
       topic: 'my.function',
-      redis: getRedisConfig(),
+      connection: getRedisConfig(),
       callback: async function(userID) {
         //do stuff...
         console.log('callback was called >', userID);
@@ -32,7 +32,7 @@ setupTelemetry();
       namespace: 'meshcall',
       topic: 'my.function',
       args: ['CoolMesh'],
-      redis: getRedisConfig(),
+      connection: getRedisConfig(),
     });
     console.log('\n* worker response >', response);
 
@@ -42,7 +42,7 @@ setupTelemetry();
       namespace: 'meshcall',
       topic: 'my.function',
       id: 'mycached123',
-      redis: getRedisConfig(),
+      connection: getRedisConfig(),
       options: { id: 'mycached123' }, //this format also works
     });
 
@@ -55,7 +55,7 @@ setupTelemetry();
         namespace: 'meshcall',
         topic: 'my.function',
         args: ['CachedMesh'],
-        redis: getRedisConfig(),
+        connection: getRedisConfig(),
         options: { id: 'mycached123', ttl: '1 day' },
       });
       console.log('* cached response for 1 day >', cached);

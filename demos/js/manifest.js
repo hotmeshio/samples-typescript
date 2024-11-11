@@ -1,3 +1,4 @@
+const Redis = require('redis');
 /**
  * The js demo apps can't refer to the db list in manifest.ts,
  * so this provides config in a format usable for the
@@ -13,39 +14,33 @@ const dbs = {
     name: 'Redis',
     label: 'redis/redis-stack7.2.0',
     search: true,
-    config: {
-      REDIS_DATABASE: 0,
-      REDIS_HOST: USE_REDIS && 'redis' || undefined,
-      REDIS_PORT: 6379,
-      REDIS_USERNAME: '',
-      REDIS_PASSWORD: 'key_admin',
-      REDIS_USE_TLS: false,
-    }
+    connection: {
+      class: Redis,
+      options: {
+        url: 'redis://:key_admin@redis:6379'
+      }
+    },
   },
   valkey: {
     name: 'ValKey',
     label: 'ValKey',
     search: false,
-    config: {
-      REDIS_DATABASE: 0,
-      REDIS_HOST: USE_VALKEY && 'valkey' || undefined,
-      REDIS_PORT: 6379,
-      REDIS_USERNAME: '',
-      REDIS_PASSWORD: 'key_admin',
-      REDIS_USE_TLS: false,
-    }
+    connection: {
+      class: Redis,
+      options: {
+        url: 'redis://:key_admin@valkey:6379'
+      }
+    },
   },
   dragonfly: {
     name: 'Dragonfly',
     label: 'DragonflyDB',
     search: true,
-    config: {
-      REDIS_DATABASE: 0,
-      REDIS_HOST: USE_DRAGONFLY && 'dragonflydb' || undefined,
-      REDIS_PORT: 6379,
-      REDIS_USERNAME: '',
-      REDIS_PASSWORD: 'key_admin',
-      REDIS_USE_TLS: false,
+    connection: {
+      class: Redis,
+      options: {
+        url: 'redis://:key_admin@dragonflydb:6379'
+      }
     }
   }
 };

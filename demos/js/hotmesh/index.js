@@ -18,13 +18,13 @@ setupTelemetry();
     appId: 'hotmesh',
     logLevel: process.env.HMSH_LOG_LEVEL || 'debug',
     engine: {
-      redis: getRedisConfig(),
+      connection: getRedisConfig(),
     },
 
     workers: [
       { 
         topic: 'work.do',
-        redis: getRedisConfig(),
+        connection: getRedisConfig(),
         callback: async function (payload) {
           return {
             metadata: { ...payload.metadata },
