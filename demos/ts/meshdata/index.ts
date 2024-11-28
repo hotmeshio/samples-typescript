@@ -1,16 +1,17 @@
 //USAGE            `DEMO_DB=valkey FTS=false npm run demo:ts:meshdata bronze silver gold`
 //                 `DEMO_DB=dragonfly npm run demo:ts:meshdata bronze silver gold`
+//                 `DEMO_DB=postgres FTS=false npm run demo:ts:meshdata tin aluminum copper`
 //                 `npm run demo:ts:meshdata bronze silver gold` //default is redis
 
 console.log('\n* initializing meshdata demo ...\n');
 
 import 'dotenv/config';
 import { Types, MeshData } from '@hotmeshio/hotmesh';
-import { getRedisConfig } from '../../../meshdata/config';
+import { getProviderConfig } from '../../../meshdata/config';
 import { getTraceUrl, setupTelemetry, shutdownTelemetry } from '../../../modules/tracer';
 setupTelemetry();
 
-const redisConfig = getRedisConfig();
+const redisConfig = getProviderConfig();
 
 (async () => {
   try {
@@ -36,6 +37,7 @@ const redisConfig = getRedisConfig();
       redisConfig.class,
       redisConfig.options,
       schema,
+      getProviderConfig(),
     );
 
     //3) Connect a 'default' worker function

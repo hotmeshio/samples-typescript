@@ -1,6 +1,6 @@
 import 'dotenv/config';
 import { MeshCall } from '@hotmeshio/hotmesh';
-import { getRedisConfig } from '../meshdata/config';
+import { getProviderConfig } from '../meshdata/config';
 import { getTraceUrl } from '../modules/tracer';
 
 /**
@@ -19,13 +19,13 @@ export const startMyCron = async (
     args,
     topic,
     callback,
-    connection: getRedisConfig(),
+    connection: getProviderConfig(),
     options: { id, interval: '5 seconds', maxCycles: 10 },
   });
 
   //Log the telemetry trace URL
   console.log('new cron started >', success);
-  const hotMesh = await MeshCall.getInstance('meshcall', getRedisConfig());
+  const hotMesh = await MeshCall.getInstance('meshcall', getProviderConfig());
   const jobState = await hotMesh.getState('meshcall.cron', id);
   console.log('\n\nTELEMETRY', getTraceUrl(jobState.metadata.trc), '\n');
 };
@@ -38,7 +38,7 @@ export const stopMyCron = async (id: string, topic: string) => {
   const success = await MeshCall.interrupt( {
     namespace: 'meshcall',
     topic,
-    connection: getRedisConfig(),
+    connection: getProviderConfig(),
     options: { id },
   });
   console.log('cron was stopped!', success);

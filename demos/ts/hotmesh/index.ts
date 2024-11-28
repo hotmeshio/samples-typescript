@@ -1,29 +1,32 @@
 //USAGE            `DEMO_DB=dragonfly npm run demo:ts:hotmesh howdy`
 //                 `DEMO_DB=valkey npm run demo:ts:hotmesh hi`
+//                 `DEMO_DB=postgres npm run demo:ts:hotmesh greetings`
 //                 `npm run demo:ts:hotmesh` //default is hello
 
 console.log('initializing hotmesh demo ...\n');
 
 import 'dotenv/config';
-import { HotMesh } from '@hotmeshio/hotmesh';
+import { HotMesh, Types } from '@hotmeshio/hotmesh';
 import { getTraceUrl, setupTelemetry, shutdownTelemetry } from '../../../modules/tracer';
-import { getRedisConfig } from '../../../meshdata/config';
-import { StreamData } from '@hotmeshio/hotmesh/build/types';
+import { getProviderConfig } from '../../../meshdata/config';
 
 setupTelemetry();
 
 (async () => {
 
-  //init an engine and worker
+  //init an engine and worker (use expanded)
+  const connection = getProviderConfig();
+  const conType = 'options' in connection ? 'connection' : 'connections';
+
   const hotMesh = await HotMesh.init({
     appId: 'hotmesh',
-    engine: { connection: getRedisConfig() },
+    engine: { [conType]: connection },
     logLevel: 'debug',
     workers: [
       { 
         topic: 'work.do',
-        connection: getRedisConfig(),
-        callback: async function (payload: StreamData) {
+        [conType]: connection,
+        callback: async function (payload: Types.StreamData) {
           return {
             metadata: { ...payload.metadata },
             data: { workerOutput: `${payload?.data?.workerInput} world` }

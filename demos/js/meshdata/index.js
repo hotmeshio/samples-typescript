@@ -6,14 +6,16 @@ console.log('\n* initializing meshdata demo ...\n');
 
 require('dotenv').config();
 const { MeshData } = require('@hotmeshio/hotmesh');
-const { getRedisConfig } = require('../config');
+const { getProviderConfig } = require('../../config');
 const { setupTelemetry, shutdownTelemetry, getTraceUrl } = require('../tracer');
 
 setupTelemetry();
 
 (async () => {
-  const redisConfig = getRedisConfig();
+  const redisConfig = getProviderConfig();
   try {
+    const con = getProviderConfig();
+
     const namespace = 'meshdata';
     let inputArgs = process.argv.slice(2);
     if (!inputArgs.length) {
@@ -36,6 +38,7 @@ setupTelemetry();
       redisConfig.class,
       redisConfig.options,
       schema,
+      con,
     );
 
     //3) Connect a 'default' worker function; call 'default' so it has a namespace we've declared with the manifest

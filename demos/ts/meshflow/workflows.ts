@@ -11,8 +11,8 @@ const { greet, saludar } = MeshFlow.workflow.proxyActivities<typeof activities>(
 });
 
 async function example(name: string, lang: string): Promise<string> {
-  //sleep to showcase replay/reentrance
-  await MeshFlow.workflow.sleepFor('1 second');
+  //sleep for 5 seconds (to demonstrate function replay)
+  await MeshFlow.workflow.sleepFor('5 seconds');
 
   //execute a proxied activity
   if (lang === 'es') {

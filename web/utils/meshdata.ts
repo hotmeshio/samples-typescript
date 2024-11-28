@@ -1,4 +1,5 @@
 import * as Redis from 'redis';
+import { Client as Postgres } from 'pg';
 import { MeshOS } from '@hotmeshio/hotmesh';
 
 // Import entity classes
@@ -22,6 +23,7 @@ import { schema as DefaultSchema } from '../../meshdata/namespaces/default/schem
 const USE_REDIS = process.env.USE_REDIS !== 'false';
 const USE_DRAGONFLY = process.env.USE_DRAGONFLY === 'true';
 const USE_VALKEY = process.env.USE_VALKEY === 'true';
+const USE_POSTGRES = process.env.USE_POSTGRES === 'true';
 
 export const databases = {
   redis: !USE_REDIS ? undefined: {
@@ -32,6 +34,17 @@ export const databases = {
       class: Redis,
       options: {
         url: 'redis://:key_admin@redis:6379'
+      }
+    },
+  },
+  postgres: !USE_POSTGRES ? undefined: {
+    name: 'Postgres',
+    label: 'postgres:latest',
+    search: false,
+    connection: {
+      class: Postgres,
+      options: {
+        connectionString: 'postgresql://postgres:password@postgres:5432/hotmesh'
       }
     },
   },
@@ -147,25 +160,23 @@ const namespaces = {
 export const configureHotMesh = () => {
   Object.keys(databases).forEach((dbKey) => {
     const db = databases[dbKey];
-    if (db.config.REDIS_HOST) {
-      MeshOS.registerDatabase(dbKey, db);
+    MeshOS.registerDatabase(dbKey, db);
 
-      Object.keys(namespaces).forEach((nsKey) => {
-        const ns = namespaces[nsKey];
-        MeshOS.registerNamespace(nsKey, ns);
-        ns.entities.forEach((entity) => {
-          MeshOS.registerEntity(entity.type, entity);
-        });
+    Object.keys(namespaces).forEach((nsKey) => {
+      const ns = namespaces[nsKey];
+      MeshOS.registerNamespace(nsKey, ns);
+      ns.entities.forEach((entity) => {
+        MeshOS.registerEntity(entity.type, entity);
       });
+    });
 
-      MeshOS.registerProfile(dbKey, {
-        db: MeshOS.databases[dbKey],
-        namespaces: Object.keys(namespaces).reduce((acc, nsKey) => {
-          acc[nsKey] = MeshOS.namespaces[nsKey];
-          return acc;
-        }, {}),
-      });
-    }
+    MeshOS.registerProfile(dbKey, {
+      db: MeshOS.databases[dbKey],
+      namespaces: Object.keys(namespaces).reduce((acc, nsKey) => {
+        acc[nsKey] = MeshOS.namespaces[nsKey];
+        return acc;
+      }, {}),
+    });
   });
 
   MeshOS.registerClass('default', DefaultEntity);

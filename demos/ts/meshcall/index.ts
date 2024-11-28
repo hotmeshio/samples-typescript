@@ -1,5 +1,6 @@
 //USAGE            `DEMO_DB=valkey npm run demo:ts:meshcall`
 //                 `DEMO_DB=dragonfly npm run demo:ts:meshcall`
+//                 `DEMO_DB=postgres npm run demo:ts:meshcall`
 //                 `npm run demo:ts:meshcall` //default is redis
 
 console.log('\n* initializing meshcall demo ...\n');
@@ -8,7 +9,7 @@ console.log('\n* initializing meshcall demo ...\n');
 import 'dotenv/config';
 import { MeshCall } from '@hotmeshio/hotmesh';
 import { getTraceUrl, setupTelemetry, shutdownTelemetry } from '../../../modules/tracer';
-import { getRedisConfig } from '../../../meshdata/config';
+import { getProviderConfig } from '../../../meshdata/config';
 setupTelemetry();
 
 (async () => {
@@ -18,7 +19,7 @@ setupTelemetry();
     await MeshCall.connect({
       namespace: 'meshcall',
       topic: 'my.function',
-      connection: getRedisConfig(),
+      connection: getProviderConfig(),
       callback: async function(userID: string): Promise<string> {
         //do stuff...
         console.log('callback was called >', userID);
@@ -32,7 +33,7 @@ setupTelemetry();
       namespace: 'meshcall',
       topic: 'my.function',
       args: ['CoolMesh'],
-      connection: getRedisConfig(),
+      connection: getProviderConfig(),
     });
     console.log('\n* worker response >', response);
 
@@ -42,7 +43,7 @@ setupTelemetry();
       namespace: 'meshcall',
       topic: 'my.function',
       id: 'mycached123',
-      connection: getRedisConfig(),
+      connection: getProviderConfig(),
       options: { id: 'mycached123' }, //this format also works
     });
 
@@ -55,7 +56,7 @@ setupTelemetry();
         namespace: 'meshcall',
         topic: 'my.function',
         args: ['CachedMesh'],
-        redis: getRedisConfig(),
+        redis: getProviderConfig(),
         //use `default` as the prefix, so the job is easy to locate (HSCAN default-*)
         options: { id: 'mycached123', ttl: '1 day' },
       });
@@ -63,7 +64,7 @@ setupTelemetry();
     }
 
     //4) Get the trace URL
-    const hotMesh = await MeshCall.getInstance('meshcall', getRedisConfig());
+    const hotMesh = await MeshCall.getInstance('meshcall', getProviderConfig());
     const jobState = await hotMesh.getState('meshcall.call', 'mycached123');
 
     //5) Shutdown

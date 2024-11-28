@@ -1,12 +1,13 @@
 //USAGE            `DEMO_DB=valkey npm run demo:js:meshflow`
 //                 `DEMO_DB=dragonfly npm run demo:js:meshflow`
+//                 `DEMO_DB=postgres npm run demo:js:meshflow`
 //                 `npm run demo:js:meshflow` //default is redis
 
 console.log('initializing meshflow demo ...\n');
 
 require('dotenv').config();
 const { MeshFlow, HotMesh } = require('@hotmeshio/hotmesh');
-const { getRedisConfig } = require('../config');
+const { getProviderConfig } = require('../../config');
 const workflows = require('./workflows');
 const { setupTelemetry, shutdownTelemetry, getTraceUrl } = require('../tracer');
 
@@ -14,12 +15,14 @@ setupTelemetry();
 
 (async () => {
   try {
+    const connection = getProviderConfig();
+
     //1) Initialize the worker; this is typically done in
     //   another file, but is done here for convenience.
     //   The worker will stay open, listening to its
     //   task queue until MeshFlow.shutdown is called.
     await MeshFlow.Worker.create({
-      connection: getRedisConfig(),
+      connection,
       taskQueue: 'default',
       namespace: 'meshflow',
       workflow: workflows.example,
@@ -33,9 +36,7 @@ setupTelemetry();
 
     //2) initialize the client; this is typically done in
     //   another file, but is done here for convenience
-    const client = new MeshFlow.Client({
-      connection: getRedisConfig(),
-    });
+    const client = new MeshFlow.Client({ connection });
 
     //3) start a new workflow
     const workflowId = `default-${HotMesh.guid()}`;

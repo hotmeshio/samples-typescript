@@ -1,12 +1,13 @@
 //USAGE            `DEMO_DB=dragonfly npm run demo:js:hotmesh howdy`
 //                 `DEMO_DB=valkey npm run demo:js:hotmesh hi`
+//                 `DEMO_DB=postgres npm run demo:js:hotmesh hola`
 //                 `npm run demo:js:hotmesh` //default is hello
 
 console.log('initializing hotmesh demo ...\n');
 
 require('dotenv').config();
 const { HotMesh } = require('@hotmeshio/hotmesh');
-const { getRedisConfig } = require('../config');
+const { getProviderConfig } = require('../../config');
 const { setupTelemetry, shutdownTelemetry, getTraceUrl } = require('../tracer');
 
 setupTelemetry();
@@ -14,17 +15,19 @@ setupTelemetry();
 (async () => {
 
   //init an engine and worker
+  const con = getProviderConfig();
+  const conType = con?.options ? 'connection' : 'connections';
   const hotMesh = await HotMesh.init({
     appId: 'hotmesh',
     logLevel: process.env.HMSH_LOG_LEVEL || 'debug',
     engine: {
-      connection: getRedisConfig(),
+      [conType]: con,
     },
 
     workers: [
       { 
         topic: 'work.do',
-        connection: getRedisConfig(),
+        [conType]: con,
         callback: async function (payload) {
           return {
             metadata: { ...payload.metadata },
