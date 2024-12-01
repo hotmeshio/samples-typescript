@@ -16,16 +16,15 @@ setupTelemetry();
 
   //init an engine and worker (use expanded)
   const connection = getProviderConfig();
-  const conType = 'options' in connection ? 'connection' : 'connections';
 
   const hotMesh = await HotMesh.init({
     appId: 'hotmesh',
-    engine: { [conType]: connection },
+    engine: { connection },
     logLevel: 'debug',
     workers: [
       { 
         topic: 'work.do',
-        [conType]: connection,
+        connection,
         callback: async function (payload: Types.StreamData) {
           return {
             metadata: { ...payload.metadata },

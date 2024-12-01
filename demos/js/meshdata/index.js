@@ -1,5 +1,6 @@
 //USAGE            `DEMO_DB=valkey FTS=false npm run demo:js:meshdata bronze silver gold`
 //                 `DEMO_DB=dragonfly npm run demo:js:meshdata bronze silver gold`
+//                 `DEMO_DB=postgres FTS=false npm run demo:js:meshdata tin zinc copper`
 //                 `npm run demo:js:meshdata bronze silver gold` //default is redis
 
 console.log('\n* initializing meshdata demo ...\n');
@@ -12,9 +13,8 @@ const { setupTelemetry, shutdownTelemetry, getTraceUrl } = require('../tracer');
 setupTelemetry();
 
 (async () => {
-  const redisConfig = getProviderConfig();
+  const providerConfig = getProviderConfig();
   try {
-    const con = getProviderConfig();
 
     const namespace = 'meshdata';
     let inputArgs = process.argv.slice(2);
@@ -34,12 +34,7 @@ setupTelemetry();
     };
 
     //2) Initialize MeshData and Redis
-    const meshData = new MeshData(
-      redisConfig.class,
-      redisConfig.options,
-      schema,
-      con,
-    );
+    const meshData = new MeshData(providerConfig, schema);
 
     //3) Connect a 'default' worker function; call 'default' so it has a namespace we've declared with the manifest
     //   (lets us see the data in the dashboard )

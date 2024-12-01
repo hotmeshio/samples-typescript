@@ -14,15 +14,14 @@ setupTelemetry();
 
 (async () => {
   try {
-    const con = getProviderConfig();
-    const conType = con?.options ? 'connection' : 'connections';
+    const connection = getProviderConfig();
 
     //1) Connect a worker function
     console.log('\n* connecting worker ...\n');
     await MeshCall.connect({
       namespace: 'meshcall',
       topic: 'my.function',
-      [conType]: con,
+      connection,
       callback: async function(userID) {
         //do stuff...
         console.log('callback was called >', userID);
@@ -36,7 +35,7 @@ setupTelemetry();
       namespace: 'meshcall',
       topic: 'my.function',
       args: ['CoolMesh'],
-      [conType]: con,
+      connection,
     });
     console.log('\n* worker response >', response);
 
@@ -46,7 +45,7 @@ setupTelemetry();
       namespace: 'meshcall',
       topic: 'my.function',
       id: 'mycached123',
-      [conType]: con,
+      connection,
       options: { id: 'mycached123' }, //this format also works
     });
 
@@ -59,14 +58,14 @@ setupTelemetry();
         namespace: 'meshcall',
         topic: 'my.function',
         args: ['CachedMesh'],
-        [conType]: con,
+        connection,
         options: { id: 'mycached123', ttl: '1 day' },
       });
       console.log('* cached response for 1 day >', cached);
     }
 
     //4) Get the trace URL
-    const hotMesh = await MeshCall.getInstance('meshcall', con);
+    const hotMesh = await MeshCall.getInstance('meshcall', connection);
     const jobState = await hotMesh.getState('meshcall.call', 'mycached123');
 
     //5) Shutdown

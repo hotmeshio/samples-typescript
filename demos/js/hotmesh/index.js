@@ -15,19 +15,16 @@ setupTelemetry();
 (async () => {
 
   //init an engine and worker
-  const con = getProviderConfig();
-  const conType = con?.options ? 'connection' : 'connections';
+  const connection = getProviderConfig();
   const hotMesh = await HotMesh.init({
     appId: 'hotmesh',
     logLevel: process.env.HMSH_LOG_LEVEL || 'debug',
-    engine: {
-      [conType]: con,
-    },
+    engine: { connection },
 
     workers: [
       { 
         topic: 'work.do',
-        [conType]: con,
+        connection,
         callback: async function (payload) {
           return {
             metadata: { ...payload.metadata },
@@ -38,7 +35,7 @@ setupTelemetry();
     ]
   });
 
-  //3) compile and deploy the app to Redis (the distributed executable)
+  //3) compile and deploy the app (the distributed executable)
   await hotMesh.deploy(`app:
   id: hotmesh
   version: '1'

@@ -1,5 +1,6 @@
 import * as Redis from 'redis';
-import { Client as Postgres } from 'pg';
+import { Pool, Client as PGClient } from 'pg';
+import { connect as NATS } from 'nats';
 import { MeshOS } from '@hotmeshio/hotmesh';
 
 // Import entity classes
@@ -25,6 +26,11 @@ const USE_DRAGONFLY = process.env.USE_DRAGONFLY === 'true';
 const USE_VALKEY = process.env.USE_VALKEY === 'true';
 const USE_POSTGRES = process.env.USE_POSTGRES === 'true';
 
+//use a connection pool for Postgres
+// const PostgresPoolClient = new Pool({
+//   connectionString: 'postgresql://postgres:password@postgres:5432/hotmesh'
+// });
+
 export const databases = {
   redis: !USE_REDIS ? undefined: {
     name: 'Redis',
@@ -42,10 +48,22 @@ export const databases = {
     label: 'postgres:latest',
     search: false,
     connection: {
-      class: Postgres,
-      options: {
-        connectionString: 'postgresql://postgres:password@postgres:5432/hotmesh'
-      }
+      store: {
+        class: PGClient,
+        options: {
+          connectionString: 'postgresql://postgres:password@postgres:5432/hotmesh'
+        }
+      },
+      stream: {
+        class: PGClient,
+        options: {
+          connectionString: 'postgresql://postgres:password@postgres:5432/hotmesh'
+        }
+      },
+      sub: {
+        class: NATS,
+        options: { servers: ['nats:4222'] }
+      },
     },
   },
   valkey: !USE_VALKEY ? undefined: {
@@ -124,7 +142,7 @@ const namespaces = {
     label: 'Sandbox Playground',
     entities: [entities['sandbox-user'], entities['sandbox-bill'], entities['sandbox-test']],
   },
-  routing: {
+  /*routing: {
     name: 'Routing',
     type: 'routing',
     label: 'Order Routing',
@@ -141,7 +159,7 @@ const namespaces = {
     type: 'inventory',
     label: 'Inventory',
     entities: [entities['inventory']],
-  },
+  },*/
   meshdata: {
     name: 'MeshData Demo',
     type: 'meshdata',

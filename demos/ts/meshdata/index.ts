@@ -34,10 +34,8 @@ const redisConfig = getProviderConfig();
 
     //2) Initialize MeshData and Redis
     const meshData = new MeshData(
-      redisConfig.class,
-      redisConfig.options,
-      schema,
       getProviderConfig(),
+      schema,
     );
 
     //3) Connect a 'default' worker function

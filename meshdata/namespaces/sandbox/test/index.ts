@@ -41,13 +41,11 @@ class Test extends MeshOS {
    * engine points of presence)
    */
   async deployEngine() {
-    const con = await this.meshData.getConnection();
-    const conType = 'options' in con ? 'connection' : 'connections';
+    const connection = await this.meshData.getConnection();
     await HotMesh.init({
       appId: this.getNamespace(),
       engine: {
-        //re-use the same Redis connection
-        [conType]: con,
+        connection,
       }
     });
     return { status: 'success', type: 'worker' };

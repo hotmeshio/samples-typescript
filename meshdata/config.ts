@@ -1,4 +1,4 @@
-import { databases } from '../web/utils/meshdata';
+import { databases } from '../web/utils/meshos';
 
 /**
  * Get the Redis configuration for the target database.
@@ -6,5 +6,5 @@ import { databases } from '../web/utils/meshdata';
  */
 export const getProviderConfig = (target = process.env.DEMO_DB || 'redis') => {
   const db = databases[target] ?? databases.redis;
-  return db.connections ?? db.connection;
+  return db.connection;
 };

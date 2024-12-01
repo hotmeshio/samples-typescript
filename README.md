@@ -11,9 +11,8 @@ The repo also includes a *Dashboard/WebApp* which surfaces all engines, workers,
    - [HotMesh Dashboard](#hotmesh-dashboard)
    - [JavaScript Lifecycle Demos](#javascript-lifecycle-demos)
    - [TypeScript Lifecycle Demos](#typescript-lifecycle-demos)
-2. [Videos](#videos)
-   - [Create an Idempotent Cron](#create-an-idempotent-cron)
-   - [Transactional Workflow](#transactional-workflow)
+2. [Install](#install)
+3. [Learn](#learn)
 3. [MeshCall](#meshcall)
    - [Connect Everything](#connect-everything)
    - [Link the Cron Function](#link-the-cron-function)
@@ -31,6 +30,11 @@ The repo also includes a *Dashboard/WebApp* which surfaces all engines, workers,
    - [Execute](#execute)
    - [Execute and Cache](#execute-and-cache)
    - [Execute and Operationalize](#execute-and-operationalize)
+6  [Connect](#connect)
+   - [Postgres Client](#postgres-client)
+   - [Postgres Pool](#postgres-pool)
+   - [Redis](#redisioredis)
+   - [NATS](#nats-pubsub)
 6. [HotMesh](#hotmesh)
    - [Distributed Orchestration](#distributed-orchestration)
    - [Control Without a Controller](#control-without-a-controller)
@@ -85,23 +89,23 @@ Run from outside the Docker container.
 - `npm run docker:demo:ts:meshflow` - Run the *MeshFlow* lifecycle example (TypeScript)
 - `npm run docker:demo:ts:meshdata bronze silver gold` - Run the *MeshData* lifecycle example (TypeScript)
 
-## Videos
+<br/>
 
-### Create an Idempotent Cron
-[Video (9m)](https://www.loom.com/share/3140e810313c4749bdb76ae87f6908dd?sid=4cda17b9-77b4-42ff-8ce2-e544512378cc)
+## Install
 
-This video demonstrates how to use the MeshCall module to link a cron function to the mesh and run it at server startup. It includes a discussion of idempotency, interruptions, and OpenTelemetry tracing.
-
-### Transactional Workflow
-[Video (9m)](https://www.loom.com/share/54ffd5266baf4ac6b287578abfd1d821?sid=cba2708d-01b4-43c1-b317-c0efaebe9c22)
-
-This video demonstrates how to use the MeshFlow module to create durable, transactional workflows. Workflow visualizations are provided using the HotMesh Dashboard and the Honeycomb OpenTelemetry Dashboard. The video also includes a discussion of Temporal.io and some background on how MeshFlow emulates the Temporal application server using a swarm of lightweight message routers.
-
+```sh
+npm install @hotmeshio/hotmesh
+```
 
 <br/>
 
-## MeshCall | Fast, Simple, Inter-Service Calls
-[MeshCall](https://hotmeshio.github.io/sdk-typescript/classes/services_meshcall.MeshCall.html) connects any function to the mesh.
+## Learn
+[🏠 Home](https://hotmesh.io/) | [📄 SDK Docs](https://hotmeshio.github.io/sdk-typescript/) | [💼 General Examples](https://github.com/hotmeshio/samples-typescript) | [💼 Temporal Examples](https://github.com/hotmeshio/temporal-patterns-typescript)
+
+<br/>
+
+## MeshCall
+[MeshCall](https://hotmeshio.github.io/sdk-typescript/classes/services_meshcall.MeshCall.html) connects any function to the mesh
 
 <details style="padding: .5em">
   <summary style="font-size:1.25em;">Run an idempotent cron job <small>[more]</small></summary>
@@ -271,8 +275,8 @@ This video demonstrates how to use the MeshFlow module to create durable, transa
 
 <br/>
 
-## MeshFlow | Transactional Workflow
-[MeshFlow](https://hotmeshio.github.io/sdk-typescript/classes/services_meshflow.MeshFlow.html) is a drop-in, serverless replacement for [Temporal.io](https://temporal.io).
+## MeshFlow
+[MeshFlow](https://hotmeshio.github.io/sdk-typescript/classes/services_meshflow.MeshFlow.html) is a serverless replacement for *Temporal.io*
 
 <details style="padding: .5em">
   <summary style="font-size:1.25em;">Orchestrate unpredictable activities <small>[more]</small></summary>
@@ -526,7 +530,7 @@ Use a standard `Promise` to collate and cache multiple signals. HotMesh will onl
 ### Cyclical Workflow
 This example calls an activity and then sleeps for a week. It runs indefinitely until it's manually stopped. It takes advantage of durable execution and can safely sleep for months or years.
 
->Container restarts have no impact on actively executing workflows as all state is retained in Redis.
+>Container restarts have no impact on actively executing workflows as all state is retained in the backend.
 
 1. Define the **workflow** logic. This one calls a legacy `statusDiagnostic` function once a week.
 
@@ -626,8 +630,8 @@ This example calls an activity and then sleeps for a week. It runs indefinitely 
 
 <br/>
 
-## MeshData | Transactional Analytics
-[MeshData](https://hotmeshio.github.io/sdk-typescript/classes/services_meshdata.MeshData.html) adds analytics to your workflows.
+## MeshData
+[MeshData](https://hotmeshio.github.io/sdk-typescript/classes/services_meshdata.MeshData.html) adds analytics to running workflows
 
 <details style="padding: .5em">
   <summary style="font-size:1.25em;">Create a search index <small>[more]</small></summary>
@@ -660,10 +664,11 @@ This example demonstrates how to define a schema and deploy an index for a 'user
     import { Client as Postgres } from 'pg';
     import { schema } from './schema';
 
-    const meshData = new MeshData(
-      Postgres,
-      options: {
-        connectionString: 'postgresql://usr:pwd@localhost:5432/db'
+    const meshData = new MeshData({
+        class: Postgres,
+        options: {
+          connectionString: 'postgresql://usr:pwd@localhost:5432/db'
+        }
       },
       schema,
     );
@@ -687,9 +692,11 @@ This example demonstrates how to create a 'user' workflow backed by the searchab
 
     export const connectUserWorker = async (): Promise<void> => {
       const meshData = new MeshData(
-        Postgres,
-        options: {
-          connectionString: 'postgresql://usr:pwd@localhost:5432/db'
+        {
+          class: Postgres,
+          options: {
+            connectionString: 'postgresql://  usr:pwd@localhost:5432/db'
+          }
         },
         schema,
       );
@@ -723,9 +730,11 @@ This example demonstrates how to create a 'user' workflow backed by the searchab
     import { Client as Postgres } from 'pg';
 
     const meshData = new MeshData(
-      Postgres,
-      options: {
-        connectionString: 'postgresql://usr:pwd@localhost:5432/db'
+      {
+        class: Postgres,
+        options: {
+          connectionString: 'postgresql://usr:pwd@localhost:5432/db'
+        }
       },
       schema,
     );
@@ -770,9 +779,11 @@ This example demonstrates how to read data fields directly from a workflow.
     import { schema } from './schema';
 
     const meshData = new MeshData(
-      Postgres,
-      options: {
-        connectionString: 'postgresql://usr:pwd@localhost:5432/db'
+      {
+        class: Postgres,
+        options: {
+          connectionString: 'postgresql://usr:pwd@localhost:5432/db'
+        }
       },
       schema,
     );
@@ -792,7 +803,7 @@ This example demonstrates how to read data fields directly from a workflow.
   <summary style="font-size:1.25em;">Search record data <small>[more]</small></summary>
 
 ### Query Record Data
-This example demonstrates how to search for those workflows where a given condition exists in the data. This one searches for active users. *NOTE: The native Redis FT.SEARCH syntax is supported. The JSON abstraction shown here is a convenience method for straight-forward, one-dimensional queries.*
+This example demonstrates how to search for those workflows where a given condition exists in the data. This one searches for active users. *NOTE: The native Redis FT.SEARCH syntax and SQL are currently supported. The JSON abstraction shown here is a convenience method for straight-forward, one-dimensional queries.*
 
 1. Search for active users (where the value of the `active` field is `yes`).
 
@@ -803,9 +814,11 @@ This example demonstrates how to search for those workflows where a given condit
     import { schema } from './schema';
 
     const meshData = new MeshData(
-      Postgres,
-      options: {
-        connectionString: 'postgresql://usr:pwd@localhost:5432/db'
+      {
+        class: Postgres,
+        options: {
+          connectionString: 'postgresql://usr:pwd@localhost:5432/db'
+        }
       },
       schema,
     );
@@ -821,25 +834,49 @@ This example demonstrates how to search for those workflows where a given condit
 <br/>
 
 ## Connect
-HotMesh is pluggable and ships with support for Postgres (pg) and Redis (ioredis/redis) as standalone backends.
+HotMesh is pluggable and ships with support for **Postgres** (pg) and **Redis** (ioredis/redis). **NATS** is also supported for extended PubSub  (patterned subscriptions).
 
-### Postgres
+<details style="padding: .5em">
+  <summary style="font-size:1.25em;">Postgres <small>[more]</small></summary>
+
+### Postgres Client
 ```typescript
-import { Client as Postgres } from 'pg';
-//OR `import { Pool as Postgres } from 'pg';`
+import { Client as PostgresClient } from 'pg';
 
+//provide these credentials to HotMesh
 const connection = {
-  class: Postgres,
+  class: PostgresClient,
   options: {
     connectionString: 'postgresql://usr:pwd@localhost:5432/db'
   }
 };
+
+```
+### Postgres Pool
+Pool connections are recommended for high-throughput applications. The pool will manage connections and automatically handle connection pooling.
+```typescript
+import { Pool as PostgresPool } from 'pg';
+
+const PostgresPoolClient = new PostgresPool({
+  connectionString: 'postgresql://usr:pwd@localhost:5432/db'
+});
+
+//provide these credentials to HotMesh
+const connection = {
+  class: PostgresPoolClient,
+  options: {}
+};
 ```
 
-### Redis
+</details>
+
+<details style="padding: .5em">
+  <summary style="font-size:1.25em;">Redis <small>[more]</small></summary>
+
+### Redis/IORedis
 ```typescript
 import * as Redis from 'redis';
-//OR `import { Client as Postgres } from 'pg';`
+//OR `import Redis from 'ioredis';`
 
 const connection = {
   class: Redis,
@@ -848,9 +885,13 @@ const connection = {
   }
 };
 ```
+</details>
 
-### NATS
-Add NATS for improved pub/sub support, including patterned subscriptions. Note the explicit channel subscription in the example below.
+<details style="padding: .5em">
+  <summary style="font-size:1.25em;">NATS <small>[more]</small></summary>
+
+### NATS PubSub
+Add NATS for improved PubSub support, including patterned subscriptions. Note the explicit channel subscription in the example below. *The NATS provider supports version 2.0 of the NATS client (the latest version). See ./package.json for details.*
 
 ```typescript
 import { Client as Postgres } from 'pg';
@@ -875,16 +916,17 @@ const connection = {
   },
 };
 ```
+</details>
 
 <br/>
 
-## HotMesh
+## HotMesh Platform Overview
 ### Distributed Orchestration
 [HotMesh](https://hotmeshio.github.io/sdk-typescript/classes/services_hotmesh.HotMesh.html) is a distributed modeling and orchestration system capable of encapsulating existing systems, such as Business Process Management (BPM) and Enterprise Application Integration (EAI). The central innovation is its ability to compile its models into Distributed Executables, replacing a traditional Application Server with a network of Decentralized Message Routers.
 
 The following depicts the mechanics of the approach and describes what is essentially a *sequence engine*. Time is an event source in the system, while sequence is the final arbiter. This allows the system to use Redis (or a Redis clone such as ValKey) like a balloon, flexibly expanding and deflating as the network adjusts to its evolving workload.
 
-<img src="./docs/img/stream_driven_workflow_with_redis.png" alt="A stream-driven workflow engine" style="max-width:100%;width:800px;">
+<img src="./docs/img/stream_driven_workflow.png" alt="A stream-driven workflow engine" style="max-width:100%;width:800px;">
 
 The modeling system is based on a [canonical set](https://zenodo.org/records/12168558) of 9 message types (and corresponding transitions) that guarantee the coordinated flow in the absence of a central controller.
 

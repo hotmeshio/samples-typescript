@@ -1,11 +1,17 @@
 const Redis = require('redis');
-const { Client: Postgres } = require('pg');
+const { Pool } = require('pg');
+const { connect:NATS } = require('nats');
+
 /**
  * The js demo apps can't refer to the db list in manifest.ts,
  * so this provides config in a format usable for the
  * javascript test environment. In this case, always
  * load all database variants, so they're available for the demo.
  */
+
+const PostgresPoolClient = new Pool({
+  connectionString: 'postgresql://postgres:password@postgres:5432/hotmesh'
+});
 
 const dbs = {
   redis: {
@@ -24,10 +30,18 @@ const dbs = {
     label: 'postgres:latest',
     search: false,
     connection: {
-      class: Postgres,
-      options: {
-        connectionString: 'postgresql://postgres:password@postgres:5432/hotmesh'
-      }
+      store: {
+        class: PostgresPoolClient,
+        options: {}
+      },
+      stream: {
+        class: PostgresPoolClient,
+        options: {}
+      },
+      sub: {
+        class: NATS,
+        options: { servers: ['nats:4222'] }
+      },
     },
   },
   valkey: {

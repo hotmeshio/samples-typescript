@@ -19,7 +19,7 @@ import { CustomRequest } from '../types/http';
 import { Socket } from './utils/socket';
 import { startMyCron } from '../cron';
 import { configureLogger } from './utils/logger';
-import { initializeHotMesh } from './utils/meshdata';
+import { initializeHotMesh } from './utils/meshos';
 
 const app = express();
 const logger = configureLogger(app);
