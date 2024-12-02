@@ -858,7 +858,8 @@ Pool connections are recommended for high-throughput applications. The pool will
 import { Pool as PostgresPool } from 'pg';
 
 const PostgresPoolClient = new PostgresPool({
-  connectionString: 'postgresql://usr:pwd@localhost:5432/db'
+  connectionString: 'postgresql://usr:pwd@localhost:5432/db',
+  max: 20,
 });
 
 //provide these credentials to HotMesh
@@ -924,7 +925,7 @@ const connection = {
 ### Distributed Orchestration
 [HotMesh](https://hotmeshio.github.io/sdk-typescript/classes/services_hotmesh.HotMesh.html) is a distributed modeling and orchestration system capable of encapsulating existing systems, such as Business Process Management (BPM) and Enterprise Application Integration (EAI). The central innovation is its ability to compile its models into Distributed Executables, replacing a traditional Application Server with a network of Decentralized Message Routers.
 
-The following depicts the mechanics of the approach and describes what is essentially a *sequence engine*. Time is an event source in the system, while sequence is the final arbiter. This allows the system to use Redis (or a Redis clone such as ValKey) like a balloon, flexibly expanding and deflating as the network adjusts to its evolving workload.
+The following depicts the mechanics of the approach and describes what is essentially a *sequence engine*. Time is an event source in the system, while sequence is the final arbiter. With the app server out of the way, the database behaves like a balloon, flexibly expanding and deflating as it adjusts to evolving workloads. *The system promises at-least-once delivery and at-most-once processing.*
 
 <img src="./docs/img/stream_driven_workflow.png" alt="A stream-driven workflow engine" style="max-width:100%;width:800px;">
 
@@ -1012,7 +1013,7 @@ const response = await hotMesh.pubsub('myfirstapp.test', {});
 <br/>
 
 ## Run the Demos
-Redis is the default test runner for the demos, but you can specify any target backend (valkey, redis, dragonfly, postgres). For example, `DEMO_DB=postgres npm run demo:js:hotmesh greetings`.
+Redis is the default test runner for the demos, but you can specify any target backend (postgres valkey, redis, dragonfly). For example, `DEMO_DB=postgres npm run demo:js:hotmesh greetings`.
 
 ### JavaScript Examples
 

@@ -14,6 +14,12 @@ async function example(name, lang) {
   //sleep to showcase replay/reentrance
   await MeshFlow.workflow.sleepFor('1 second');
 
+  await MeshFlow.workflow.trace({
+    strng: 'example',
+    nmbr: 42,
+    bln: true,
+  });
+
   //execute a proxied activity
   if (lang === 'es') {
     return await saludar(name);
