@@ -15,9 +15,9 @@ async function example(name, lang) {
   await MeshFlow.workflow.sleepFor('1 second');
 
   await MeshFlow.workflow.trace({
-    strng: 'example',
-    nmbr: 42,
-    bln: true,
+    'app.custom.string': 'example',
+    'app.custom.number': 42,
+    'app.custom.boolean': true,
   });
 
   //execute a proxied activity
