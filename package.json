@@ -1,6 +1,6 @@
 {
   "name": "samples-typescript",
-  "version": "0.3.25",
+  "version": "0.3.28",
   "description": "HotMesh TypeScript Samples",
   "scripts": {
     "clean": "rimraf ./build",
@@ -54,7 +54,7 @@
   "dependencies": {
     "@honeycombio/opentelemetry-node": "^0.7.2",
     "@hotmeshio/dashboard": "^0.3.7",
-    "@hotmeshio/hotmesh": "^0.3.25",
+    "@hotmeshio/hotmesh": "^0.3.28",
     "@opentelemetry/auto-instrumentations-node": "^0.47.1",
     "@opentelemetry/sdk-node": "^0.52.1",
     "cors": "^2.8.5",
